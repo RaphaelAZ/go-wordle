@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/RaphaelAZ/go-wordle/internal/models"
+	"github.com/RaphaelAZ/go-wordle/backend/internal/models"
 )
 
 type GameRepository struct {

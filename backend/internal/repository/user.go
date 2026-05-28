@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/RaphaelAZ/go-wordle/internal/models"
+	"github.com/RaphaelAZ/go-wordle/backend/internal/models"
 )
 
 type UserRepository struct {

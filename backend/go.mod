@@ -1,4 +1,4 @@
-module github.com/RaphaelAZ/go-wordle
+module github.com/RaphaelAZ/go-wordle/backend
 
 go 1.26.3
 

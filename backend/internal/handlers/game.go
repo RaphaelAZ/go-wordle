@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/RaphaelAZ/go-wordle/internal/models"
-	"github.com/RaphaelAZ/go-wordle/internal/repository"
+	"github.com/RaphaelAZ/go-wordle/backend/internal/models"
+	"github.com/RaphaelAZ/go-wordle/backend/internal/repository"
 	"github.com/gin-gonic/gin"
 )
 

@@ -4,11 +4,11 @@ import (
 	"log"
 	"os"
 
-	"github.com/RaphaelAZ/go-wordle/internal/database"
-	"github.com/RaphaelAZ/go-wordle/internal/handlers"
-	"github.com/RaphaelAZ/go-wordle/internal/middleware"
-	"github.com/RaphaelAZ/go-wordle/internal/repository"
-	"github.com/RaphaelAZ/go-wordle/internal/seeds"
+	"github.com/RaphaelAZ/go-wordle/backend/internal/database"
+	"github.com/RaphaelAZ/go-wordle/backend/internal/handlers"
+	"github.com/RaphaelAZ/go-wordle/backend/internal/middleware"
+	"github.com/RaphaelAZ/go-wordle/backend/internal/repository"
+	"github.com/RaphaelAZ/go-wordle/backend/internal/seeds"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )

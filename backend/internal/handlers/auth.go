@@ -5,8 +5,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/RaphaelAZ/go-wordle/internal/middleware"
-	"github.com/RaphaelAZ/go-wordle/internal/repository"
+	"github.com/RaphaelAZ/go-wordle/backend/internal/middleware"
+	"github.com/RaphaelAZ/go-wordle/backend/internal/repository"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
