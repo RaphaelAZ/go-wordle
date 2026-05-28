@@ -1,0 +1,88 @@
+package main
+
+import (
+	"log"
+	"os"
+
+	"github.com/RaphaelAZ/go-wordle/internal/database"
+	"github.com/RaphaelAZ/go-wordle/internal/handlers"
+	"github.com/RaphaelAZ/go-wordle/internal/middleware"
+	"github.com/RaphaelAZ/go-wordle/internal/repository"
+	"github.com/RaphaelAZ/go-wordle/internal/seeds"
+	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
+)
+
+func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Println("no .env file found, reading from environment")
+	}
+
+	db, err := database.Connect()
+	if err != nil {
+		log.Fatalf("database connection failed: %v", err)
+	}
+	defer db.Close()
+
+	if err := database.Migrate(db); err != nil {
+		log.Fatalf("migration failed: %v", err)
+	}
+
+	// repositories
+	userRepo   := repository.NewUserRepository(db)
+	wordRepo   := repository.NewWordRepository(db)
+	gameRepo   := repository.NewGameRepository(db)
+	configRepo := repository.NewConfigRepository(db)
+
+	// seed words on first run
+	count, _ := wordRepo.Count()
+	if count == 0 {
+		n, err := wordRepo.Seed(seeds.FrenchWords)
+		if err != nil {
+			log.Printf("seed warning: %v", err)
+		} else {
+			log.Printf("seeded %d words", n)
+		}
+	}
+
+	// handlers
+	authHandler   := handlers.NewAuthHandler(userRepo)
+	wordHandler   := handlers.NewWordHandler(wordRepo)
+	gameHandler   := handlers.NewGameHandler(gameRepo)
+	configHandler := handlers.NewConfigHandler(configRepo)
+
+	r := gin.Default()
+
+	api := r.Group("/api")
+	{
+		auth := api.Group("/auth")
+		{
+			auth.POST("/register", authHandler.Register)
+			auth.POST("/login", authHandler.Login)
+		}
+
+		protected := api.Group("/")
+		protected.Use(middleware.AuthRequired())
+		{
+			protected.GET("/me", authHandler.Me)
+
+			protected.GET("/words/random", wordHandler.Random)
+
+			protected.POST("/games", gameHandler.Create)
+			protected.GET("/games", gameHandler.List)
+			protected.GET("/games/stats", gameHandler.Stats)
+
+			protected.GET("/config", configHandler.Get)
+			protected.PUT("/config", configHandler.Upsert)
+		}
+	}
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	log.Printf("server listening on :%s", port)
+	if err := r.Run(":" + port); err != nil {
+		log.Fatalf("server error: %v", err)
+	}
+}
