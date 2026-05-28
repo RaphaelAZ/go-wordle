@@ -7,5 +7,7 @@ type State struct {
 	Height   int
 	Editing  bool
 	Focus    bool
+	Connected bool
 	Auth     Auth
+	Game     Game
 }

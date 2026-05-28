@@ -6,12 +6,14 @@ type Screen int
 const (
 	ScreenHome Screen = iota // Increment values for each screen
 	ScreenAuth
+	ScreenGame
 	ScreenSettings
 )
 
 // Screens labels
-var ScreenLabels = [3]string{
+var ScreenLabels = [4]string{
 	"Accueil",
 	"Connexion",
+	"Jeu",
 	"Paramètres",
 }

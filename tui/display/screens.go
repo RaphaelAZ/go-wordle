@@ -58,6 +58,32 @@ func SettingsScreen() string {
 	)
 }
 
+func GameScreen(m model.State) string {
+	theme := DefaultTheme()
+	wordToGuess := m.Game.WordToGuess
+	if wordToGuess == "" {
+		wordToGuess = "_ _ _ _ _"
+	}
+
+	triedWords := "Aucun mot essayé pour le moment"
+	if len(m.Game.TriedWords) > 0 {
+		triedWords = strings.Join(m.Game.TriedWords, "  |  ")
+	}
+
+	body := []string{
+		theme.Text.Render("Mot à deviner    : " + wordToGuess),
+		theme.Text.Render("Mots essayés     : " + triedWords),
+		theme.Text.Render("Essais restants  : 6"),
+	}
+
+	return RenderApp(
+		"Jeu",
+		"Wordle en cours",
+		body,
+		theme.Muted.Render("Prochaine étape: brancher la logique de proposition et de validation"),
+	)
+}
+
 func Dashboard() string {
 	theme := DefaultTheme()
 	sections := []string{
@@ -66,6 +92,8 @@ func Dashboard() string {
 		HomeScreen(),
 		"",
 		AuthScreen(model.State{}),
+		"",
+		GameScreen(model.State{}),
 		"",
 		SettingsScreen(),
 	}

@@ -45,7 +45,7 @@ func (m State) View() tea.View {
 	theme := DefaultTheme()
 	menu := m.menuView(theme)
 	content := m.contentView(theme)
-	help := theme.Muted.Render("Navigation: ↑ ↓ ← → / Tab, chiffres 1-5, Enter, q pour quitter")
+	help := theme.Muted.Render("Navigation: ↑ ↓ ← → / Tab, chiffres 1-4, Enter, q pour quitter")
 
 	left := theme.Panel.Width(24).Render(menu)
 	rightWidth := 66
@@ -65,15 +65,16 @@ func (m State) View() tea.View {
 }
 
 func (m State) menuView(theme Theme) string {
-	items := make([]string, 0, len(model.ScreenLabels))
-	for i, label := range model.ScreenLabels {
+	visible := visibleScreens(m.State)
+	items := make([]string, 0, len(visible))
+	for i, screen := range visible {
 		style := theme.Muted
 		prefix := "  "
-		if model.Screen(i) == m.State.Selected {
+		if screen == m.State.Selected {
 			style = theme.Accent
 			prefix = "> "
 		}
-		items = append(items, style.Render(prefix+fmt.Sprintf("%d. %s", i+1, label)))
+		items = append(items, style.Render(prefix+fmt.Sprintf("%d. %s", i+1, model.ScreenLabels[screen])))
 	}
 
 	return strings.Join(append([]string{theme.Section.Render("Menu")}, items...), "\n\n")
@@ -85,11 +86,22 @@ func (m State) contentView(theme Theme) string {
 		return HomeScreen()
 	case model.ScreenAuth:
 		return AuthScreen(m.State)
+	case model.ScreenGame:
+		return GameScreen(m.State)
 	case model.ScreenSettings:
 		return SettingsScreen()
 	default:
 		return HomeScreen()
 	}
+}
+
+func visibleScreens(state model.State) []model.Screen {
+	screens := []model.Screen{model.ScreenHome, model.ScreenAuth}
+	if state.Connected {
+		screens = append(screens, model.ScreenGame)
+	}
+	screens = append(screens, model.ScreenSettings)
+	return screens
 }
 
 // Init tea program

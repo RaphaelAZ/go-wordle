@@ -22,6 +22,10 @@ func HandleKey(m model.State, msg tea.KeyMsg) (model.State, tea.Cmd) {
 		if m.Selected == model.ScreenAuth {
 			m.Auth.Field = model.AuthFieldLogin
 		}
+		if m.Selected == model.ScreenGame {
+			m.Editing = false
+			m.Focus = false
+		}
 	}
 	return m, nil
 }
@@ -33,6 +37,13 @@ func HandleEditKey(m model.State, msg tea.KeyMsg) (model.State, tea.Cmd) {
 	case "enter":
 		if m.Selected == model.ScreenAuth && m.Auth.Field == model.AuthFieldLogin {
 			m.Auth.Field = model.AuthFieldPassword
+			return m, nil
+		}
+		if m.Selected == model.ScreenAuth && m.Auth.Field == model.AuthFieldPassword {
+			m.Connected = true
+			m.Selected = model.ScreenGame
+			m.Editing = false
+			m.Focus = false
 			return m, nil
 		}
 		return exitEdit(m), nil
@@ -66,23 +77,47 @@ func deleteAuthValue(m model.State) model.State {
 }
 
 func prevScreen(m model.State) model.State {
-	if m.Selected == 0 {
-		m.Selected = model.Screen(len(model.ScreenLabels) - 1)
-	} else {
-		m.Selected--
+	visible := visibleScreens(m)
+	for i := range visible {
+		if visible[i] == m.Selected {
+			if i == 0 {
+				m.Selected = visible[len(visible)-1]
+			} else {
+				m.Selected = visible[i-1]
+			}
+			return m
+		}
 	}
+	m.Selected = visible[0]
 	return m
 }
 
 func nextScreen(m model.State) model.State {
-	m.Selected = (m.Selected + 1) % model.Screen(len(model.ScreenLabels))
+	visible := visibleScreens(m)
+	for i := range visible {
+		if visible[i] == m.Selected {
+			m.Selected = visible[(i+1)%len(visible)]
+			return m
+		}
+	}
+	m.Selected = visible[0]
 	return m
 }
 
 func selectByNumber(m model.State, s string) model.State {
 	n := s[0] - '1'
-	if n >= 0 && int(n) < len(model.ScreenLabels) {
-		m.Selected = model.Screen(n)
+	visible := visibleScreens(m)
+	if n >= 0 && int(n) < len(visible) {
+		m.Selected = visible[n]
 	}
 	return m
+}
+
+func visibleScreens(m model.State) []model.Screen {
+	screens := []model.Screen{model.ScreenHome, model.ScreenAuth}
+	if m.Connected {
+		screens = append(screens, model.ScreenGame)
+	}
+	screens = append(screens, model.ScreenSettings)
+	return screens
 }
