@@ -1,0 +1,60 @@
+version: 2
+
+project_name: go-wordle
+
+builds:
+  - id: backend
+    dir: ./backend
+    main: ./cmd/server
+    binary: go-wordle-server
+    env:
+      - CGO_ENABLED=0
+    flags:
+      - -trimpath
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+
+  - id: tui
+    dir: ./tui
+    main: .
+    binary: go-wordle
+    env:
+      - CGO_ENABLED=0
+    flags:
+      - -trimpath
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - id: backend
+    ids:
+      - backend
+    formats:
+      - tar.gz
+
+  - id: tui
+    ids:
+      - tui
+    formats:
+      - tar.gz
+      - zip
+
+checksum:
+  name_template: checksums.txt
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-snapshot"
+
+changelog:
+  use: git
+  sort: asc

@@ -30,6 +30,12 @@ Projet Go en cours de réalisation.
 - [ ] Publier la CLI sur GitHub dans la section Releases du dépôt
 - [ ] Répondre aux questions techniques lors de la soutenance
 
+## Release avec GoReleaser
+
+- La configuration GoReleaser est dans [`.goreleaser.yaml`](.goreleaser.yaml).
+- Le workflow GitHub Actions se trouve dans [`.github/workflows/release.yml`](.github/workflows/release.yml) et s'exécute sur les tags `v*`.
+- Les binaires générés sont `go-wordle-server` pour le backend et `go-wordle` pour le TUI.
+
 ## Notes
 
 - État actuel du dépôt: un simple point d'entrée Go qui affiche "Hello, World!".
