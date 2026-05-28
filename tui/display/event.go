@@ -7,41 +7,41 @@ import (
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 	"gowordle.com/display/handlers"
-	"gowordle.com/display/state"
+	"gowordle.com/display/model"
 )
 
-type Model struct {
-	State state.Model
+type State struct {
+	State model.State
 }
 
-func NewModel() Model {
-	return Model{State: state.Model{Selected: state.ScreenHome}}
+func NewModel() State {
+	return State{State: model.State{Selected: model.ScreenHome}}
 }
 
-// Model Init
-func (m Model) Init() tea.Cmd {
+// State Init
+func (m State) Init() tea.Cmd {
 	return nil
 }
 
 // Update (auto-detect events)
-func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m State) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		if m.State.Editing {
 			nm, cmd := handlers.HandleEditKey(m.State, msg)
-			return Model{State: nm}, cmd
+			return State{State: nm}, cmd
 		}
 		nm, cmd := handlers.HandleKey(m.State, msg)
-		return Model{State: nm}, cmd
+		return State{State: nm}, cmd
 	case tea.WindowSizeMsg:
 		nm, cmd := handlers.HandleWindowSize(m.State, msg)
-		return Model{State: nm}, cmd
+		return State{State: nm}, cmd
 	}
 	return m, nil
 }
 
 // View (render UI)
-func (m Model) View() tea.View {
+func (m State) View() tea.View {
 	theme := DefaultTheme()
 	menu := m.menuView(theme)
 	content := m.contentView(theme)
@@ -64,12 +64,12 @@ func (m Model) View() tea.View {
 	return tea.NewView(lipgloss.JoinHorizontal(lipgloss.Top, left, "  ", right) + "\n\n" + bottom)
 }
 
-func (m Model) menuView(theme Theme) string {
-	items := make([]string, 0, len(state.ScreenLabels))
-	for i, label := range state.ScreenLabels {
+func (m State) menuView(theme Theme) string {
+	items := make([]string, 0, len(model.ScreenLabels))
+	for i, label := range model.ScreenLabels {
 		style := theme.Muted
 		prefix := "  "
-		if state.Screen(i) == m.State.Selected {
+		if model.Screen(i) == m.State.Selected {
 			style = theme.Accent
 			prefix = "> "
 		}
@@ -79,13 +79,13 @@ func (m Model) menuView(theme Theme) string {
 	return strings.Join(append([]string{theme.Section.Render("Menu")}, items...), "\n\n")
 }
 
-func (m Model) contentView(theme Theme) string {
+func (m State) contentView(theme Theme) string {
 	switch m.State.Selected {
-	case state.ScreenHome:
+	case model.ScreenHome:
 		return HomeScreen()
-	case state.ScreenAuth:
+	case model.ScreenAuth:
 		return AuthScreen(m.State)
-	case state.ScreenSettings:
+	case model.ScreenSettings:
 		return SettingsScreen()
 	default:
 		return HomeScreen()

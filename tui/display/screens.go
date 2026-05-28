@@ -3,7 +3,7 @@ package display
 import (
 	"strings"
 
-	"gowordle.com/display/state"
+	"gowordle.com/display/model"
 )
 
 func HomeScreen() string {
@@ -22,11 +22,11 @@ func HomeScreen() string {
 	)
 }
 
-func AuthScreen(m state.Model) string {
+func AuthScreen(m model.State) string {
 	theme := DefaultTheme()
 	body := []string{
-		authFieldLine(theme, "Login", m.Login, m.Editing && m.AuthField == state.AuthFieldLogin, false),
-		authFieldLine(theme, "Mot de passe", m.Password, m.Editing && m.AuthField == state.AuthFieldPassword, true),
+		authFieldLine(theme, "Login", m.Auth.Login, m.Editing && m.Auth.Field == model.AuthFieldLogin, false),
+		authFieldLine(theme, "Mot de passe", m.Auth.Password, m.Editing && m.Auth.Field == model.AuthFieldPassword, true),
 	}
 
 	footer := "Appuyez sur Entrée pour éditer"
@@ -65,7 +65,7 @@ func Dashboard() string {
 		"",
 		HomeScreen(),
 		"",
-		AuthScreen(state.Model{}),
+		AuthScreen(model.State{}),
 		"",
 		SettingsScreen(),
 	}

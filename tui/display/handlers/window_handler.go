@@ -2,10 +2,10 @@ package handlers
 
 import (
 	tea "charm.land/bubbletea/v2"
-	"gowordle.com/display/state"
+	"gowordle.com/display/model"
 )
 
-func HandleWindowSize(m state.Model, msg tea.WindowSizeMsg) (state.Model, tea.Cmd) {
+func HandleWindowSize(m model.State, msg tea.WindowSizeMsg) (model.State, tea.Cmd) {
 	m.Width = msg.Width
 	m.Height = msg.Height
 	return m, nil
