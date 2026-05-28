@@ -1,0 +1,15 @@
+meta {
+  name: Random Word
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/words/random
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}

@@ -1,0 +1,15 @@
+# environment variables (contain credentials)
+.env
+
+# compiled binaries
+*.exe
+*.out
+/server
+/cmd/server/server
+
+# Go build cache
+/dist/
+
+# OS
+.DS_Store
+Thumbs.db

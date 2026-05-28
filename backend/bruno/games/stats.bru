@@ -1,0 +1,15 @@
+meta {
+  name: Game Stats
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/games/stats
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
