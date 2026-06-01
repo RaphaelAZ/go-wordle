@@ -7,6 +7,10 @@ import (
 )
 
 func HandleKey(m model.State, msg tea.KeyMsg) (model.State, tea.Cmd) {
+	if m.Selected == model.ScreenGame {
+		return handleGameKey(m, msg)
+	}
+
 	switch msg.String() {
 	case "q", "esc":
 		return m, tea.Quit
@@ -22,9 +26,32 @@ func HandleKey(m model.State, msg tea.KeyMsg) (model.State, tea.Cmd) {
 		if m.Selected == model.ScreenAuth {
 			m.Auth.Field = model.AuthFieldLogin
 		}
-		if m.Selected == model.ScreenGame {
-			m.Editing = false
-			m.Focus = false
+	}
+	return m, nil
+}
+
+func handleGameKey(m model.State, msg tea.KeyMsg) (model.State, tea.Cmd) {
+	if m.Game.Status != model.GamePlaying {
+		if msg.String() == "esc" {
+			m.Selected = model.ScreenHome
+		}
+		return m, nil
+	}
+
+	switch msg.String() {
+	case "esc":
+		m.Selected = model.ScreenHome
+		return m, nil
+	case "enter":
+		return fields.SubmitGuess(m), nil
+	case "backspace", "delete":
+		return fields.DeleteGuessLetter(m), nil
+	}
+
+	if len([]rune(msg.String())) == 1 {
+		r := []rune(msg.String())[0]
+		if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') {
+			return fields.AppendGuessLetter(m, msg.String()), nil
 		}
 	}
 	return m, nil
@@ -42,6 +69,7 @@ func HandleEditKey(m model.State, msg tea.KeyMsg) (model.State, tea.Cmd) {
 		if m.Selected == model.ScreenAuth && m.Auth.Field == model.AuthFieldPassword {
 			m.Connected = true
 			m.Selected = model.ScreenGame
+			m.Game.WordToGuess = "BRUME"
 			m.Editing = false
 			m.Focus = false
 			return m, nil

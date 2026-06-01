@@ -3,6 +3,7 @@ package display
 import (
 	"strings"
 
+	"gowordle.com/display/handlers"
 	"gowordle.com/display/model"
 )
 
@@ -59,28 +60,49 @@ func SettingsScreen() string {
 }
 
 func GameScreen(m model.State) string {
+	if m.Game.WordToGuess == "" {
+		m.Game.WordToGuess = "BRUME"
+	}
+
 	theme := DefaultTheme()
-	wordToGuess := m.Game.WordToGuess
-	if wordToGuess == "" {
-		wordToGuess = "_ _ _ _ _"
+	body := []string{}
+
+	for i := 0; i < 6; i++ {
+		// if current word
+		if i == len(m.Game.TriedWords) {
+			// No styling at all
+			padded := handlers.AddPaddingsToCurrentGuessedWord(m.Game.CurrentGuess)
+			body = append(body, theme.Accent.Render(handlers.ToWordleDisplayString(padded)))
+			continue
+		}
+
+		if i > len(m.Game.TriedWords) {
+			body = append(body, theme.Muted.Render("_ _ _ _ _"))
+			continue
+		}
+
+		var toAppend []string
+
+		// render the letters of the game
+		for j := 0; j < len(m.Game.TriedWords[i]); j++ {
+			toAppend = append(toAppend, handlers.RenderWordleColoredLetter(m.Game.TriedWords[i][j], theme.Letters.Correct, theme.Letters.Misplaced, theme.Letters.Incorrect))
+		}
+
+		body = append(body, strings.Join(toAppend, " "))
 	}
 
-	triedWords := "Aucun mot essayé pour le moment"
-	if len(m.Game.TriedWords) > 0 {
-		triedWords = strings.Join(m.Game.TriedWords, "  |  ")
-	}
-
-	body := []string{
-		theme.Text.Render("Mot à deviner    : " + wordToGuess),
-		theme.Text.Render("Mots essayés     : " + triedWords),
-		theme.Text.Render("Essais restants  : 6"),
+	footer := "Tapez une lettre, Entrée pour valider, Échap pour le menu"
+	if m.Game.Status == model.GameWon {
+		footer = "Bravo ! Vous avez trouvé le mot !"
+	} else if m.Game.Status == model.GameLost {
+		footer = "Perdu ! Le mot était : " + strings.ToUpper(m.Game.WordToGuess)
 	}
 
 	return RenderApp(
 		"Jeu",
 		"Wordle en cours",
 		body,
-		theme.Muted.Render("Prochaine étape: brancher la logique de proposition et de validation"),
+		theme.Muted.Render(footer),
 	)
 }
 
