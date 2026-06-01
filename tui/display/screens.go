@@ -3,6 +3,7 @@ package display
 import (
 	"strings"
 
+	"charm.land/lipgloss/v2"
 	"gowordle.com/display/handlers"
 	"gowordle.com/display/model"
 )
@@ -64,31 +65,33 @@ func GameScreen(m model.State) string {
 		m.Game.WordToGuess = "BRUME"
 	}
 
+	width := m.Width
+	if width <= 0 {
+		width = 120
+	}
+	height := m.Height
+	if height <= 0 {
+		height = 30
+	}
+
 	theme := DefaultTheme()
-	body := []string{}
 
+	var gridLines []string
 	for i := 0; i < 6; i++ {
-		// if current word
 		if i == len(m.Game.TriedWords) {
-			// No styling at all
 			padded := handlers.AddPaddingsToCurrentGuessedWord(m.Game.CurrentGuess)
-			body = append(body, theme.Accent.Render(handlers.ToWordleDisplayString(padded)))
+			gridLines = append(gridLines, theme.Accent.Render(handlers.ToWordleDisplayString(padded)))
 			continue
 		}
-
 		if i > len(m.Game.TriedWords) {
-			body = append(body, theme.Muted.Render("_ _ _ _ _"))
+			gridLines = append(gridLines, theme.Muted.Render("_ _ _ _ _"))
 			continue
 		}
-
-		var toAppend []string
-
-		// render the letters of the game
-		for j := 0; j < len(m.Game.TriedWords[i]); j++ {
-			toAppend = append(toAppend, handlers.RenderWordleColoredLetter(m.Game.TriedWords[i][j], theme.Letters.Correct, theme.Letters.Misplaced, theme.Letters.Incorrect))
+		var letters []string
+		for _, ls := range m.Game.TriedWords[i] {
+			letters = append(letters, handlers.RenderWordleColoredLetter(ls, theme.Letters.Correct, theme.Letters.Misplaced, theme.Letters.Incorrect))
 		}
-
-		body = append(body, strings.Join(toAppend, " "))
+		gridLines = append(gridLines, strings.Join(letters, " "))
 	}
 
 	footer := "Tapez une lettre, Entrée pour valider, Échap pour le menu"
@@ -98,18 +101,46 @@ func GameScreen(m model.State) string {
 		footer = "Perdu ! Le mot était : " + strings.ToUpper(m.Game.WordToGuess)
 	}
 
-	return RenderApp(
-		"Jeu",
-		"Wordle en cours",
-		body,
-		theme.Muted.Render(footer),
+	grid := lipgloss.NewStyle().Padding(1, 2).Render(strings.Join(gridLines, "\n"))
+	keyboard := lipgloss.NewStyle().Padding(1, 2).Render(renderKeyboard(m, theme))
+	middle := lipgloss.Place(width, height-4,
+		lipgloss.Center, lipgloss.Center,
+		lipgloss.JoinHorizontal(lipgloss.Center, grid, "    ", keyboard),
 	)
+
+	title := theme.Title.Width(width).Render("Wordle")
+	footerLine := theme.Muted.Width(width).Align(lipgloss.Center).Render(footer)
+
+	return lipgloss.JoinVertical(lipgloss.Left, title, middle, footerLine)
+}
+
+func renderKeyboard(m model.State, theme Theme) string {
+	rows := [][]string{
+		{"A", "Z", "E", "R", "T", "Y", "U", "I", "O", "P"},
+		{"Q", "S", "D", "F", "G", "H", "J", "K", "L", "M"},
+		{"W", "X", "C", "V", "B", "N"},
+	}
+
+	var renderedRows []string
+	for _, row := range rows {
+		var keys []string
+		for _, key := range row {
+			letter := key[0]
+			if ls, ok := m.Game.UsedLetters[letter]; ok {
+				keys = append(keys, handlers.RenderWordleColoredLetter(ls, theme.Letters.Correct, theme.Letters.Misplaced, theme.Letters.Incorrect))
+			} else {
+				keys = append(keys, theme.Text.Render(key))
+			}
+		}
+		renderedRows = append(renderedRows, strings.Join(keys, " "))
+	}
+	return strings.Join(renderedRows, "\n")
 }
 
 func Dashboard() string {
 	theme := DefaultTheme()
 	sections := []string{
-		theme.Button.Render("CLI TUI"),
+		theme.Button.Render("CUI CUI JE SUIS UN POULET"),
 		"",
 		HomeScreen(),
 		"",

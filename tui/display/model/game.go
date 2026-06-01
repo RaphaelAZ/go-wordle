@@ -14,6 +14,7 @@ type Game struct {
 	TriedWords   [][]LetterStatus
 	CurrentGuess string
 	Status       GameStatus
+	UsedLetters  map[byte]LetterStatus
 }
 
 type LetterStatus struct {
