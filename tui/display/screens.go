@@ -3,6 +3,8 @@ package display
 import (
 	"strings"
 
+	"charm.land/lipgloss/v2"
+	"gowordle.com/display/handlers"
 	"gowordle.com/display/model"
 )
 
@@ -59,35 +61,88 @@ func SettingsScreen() string {
 }
 
 func GameScreen(m model.State) string {
+	// TODO: brancher ici aussi la logique de récupération du mot du jour.
+	if m.Game.WordToGuess == "" {
+		m.Game.WordToGuess = "BRUME"
+	}
+
+	width := m.Width
+	if width <= 0 {
+		width = 120
+	}
+	height := m.Height
+	if height <= 0 {
+		height = 30
+	}
+
 	theme := DefaultTheme()
-	wordToGuess := m.Game.WordToGuess
-	if wordToGuess == "" {
-		wordToGuess = "_ _ _ _ _"
+
+	var gridLines []string
+	for i := 0; i < 6; i++ {
+		// essai actuel
+		if i == len(m.Game.TriedWords) {
+			padded := handlers.AddPaddingsToCurrentGuessedWord(m.Game.CurrentGuess)
+			gridLines = append(gridLines, theme.Accent.Render(handlers.ToWordleDisplayString(padded)))
+			continue
+		}
+		if i > len(m.Game.TriedWords) {
+			gridLines = append(gridLines, theme.Muted.Render("_ _ _ _ _"))
+			continue
+		}
+		var letters []string
+		for _, ls := range m.Game.TriedWords[i] {
+			letters = append(letters, handlers.RenderWordleColoredLetter(ls, theme.Letters.Correct, theme.Letters.Misplaced, theme.Letters.Incorrect))
+		}
+		gridLines = append(gridLines, strings.Join(letters, " "))
 	}
 
-	triedWords := "Aucun mot essayé pour le moment"
-	if len(m.Game.TriedWords) > 0 {
-		triedWords = strings.Join(m.Game.TriedWords, "  |  ")
+	footer := "Tapez une lettre, Entrée pour valider, Échap pour le menu"
+	if m.Game.Status == model.GameWon {
+		footer = "Bravo ! Vous avez trouvé le mot !"
+	} else if m.Game.Status == model.GameLost {
+		footer = "Perdu ! Le mot était : " + strings.ToUpper(m.Game.WordToGuess)
 	}
 
-	body := []string{
-		theme.Text.Render("Mot à deviner    : " + wordToGuess),
-		theme.Text.Render("Mots essayés     : " + triedWords),
-		theme.Text.Render("Essais restants  : 6"),
-	}
-
-	return RenderApp(
-		"Jeu",
-		"Wordle en cours",
-		body,
-		theme.Muted.Render("Prochaine étape: brancher la logique de proposition et de validation"),
+	grid := lipgloss.NewStyle().Padding(1, 2).Render(strings.Join(gridLines, "\n"))
+	keyboard := lipgloss.NewStyle().Padding(1, 2).Render(renderKeyboard(m, theme))
+	middle := lipgloss.Place(width, height-4,
+		lipgloss.Center, lipgloss.Center,
+		lipgloss.JoinHorizontal(lipgloss.Center, grid, "    ", keyboard),
 	)
+
+	title := theme.Title.Width(width).Render("Wordle")
+	footerLine := theme.Muted.Width(width).Align(lipgloss.Center).Render(footer)
+
+	return lipgloss.JoinVertical(lipgloss.Left, title, middle, footerLine)
+}
+
+func renderKeyboard(m model.State, theme Theme) string {
+	rows := [][]string{
+		{"A", "Z", "E", "R", "T", "Y", "U", "I", "O", "P"},
+		{"Q", "S", "D", "F", "G", "H", "J", "K", "L", "M"},
+		{"W", "X", "C", "V", "B", "N"},
+	}
+
+	var renderedRows []string
+	for _, row := range rows {
+		var keys []string
+		for _, key := range row {
+			letter := key[0]
+			if ls, ok := m.Game.UsedLetters[letter]; ok {
+				keys = append(keys, handlers.RenderWordleColoredLetter(ls, theme.Letters.Correct, theme.Letters.Misplaced, theme.Letters.Incorrect))
+			} else {
+				keys = append(keys, theme.Text.Render(key))
+			}
+		}
+		renderedRows = append(renderedRows, strings.Join(keys, " "))
+	}
+	return strings.Join(renderedRows, "\n")
 }
 
 func Dashboard() string {
 	theme := DefaultTheme()
 	sections := []string{
-		theme.Button.Render("CLI TUI"),
+		theme.Button.Render("CUI CUI JE SUIS UN POULET"),
 		"",
 		HomeScreen(),
 		"",

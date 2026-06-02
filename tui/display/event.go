@@ -43,10 +43,15 @@ func (m State) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 // View (render UI)
 func (m State) View() tea.View {
 	theme := DefaultTheme()
-	menu := m.menuView(theme)
-	content := m.contentView(theme)
 	help := theme.Muted.Render("Navigation: ↑ ↓ ← → / Tab, chiffres 1-4, Enter, q pour quitter")
 
+	if m.State.Selected == model.ScreenGame {
+		content := GameScreen(m.State)
+		return tea.NewView(content + "\n\n" + help)
+	}
+
+	menu := m.menuView(theme)
+	content := m.contentView()
 	left := theme.Panel.Width(24).Render(menu)
 	rightWidth := 66
 	if m.State.Width > 30 {
@@ -54,14 +59,7 @@ func (m State) View() tea.View {
 	}
 	right := theme.Border.Width(rightWidth).Render(content)
 
-	var bottom string
-	if m.State.Height > 0 {
-		bottom = help
-	} else {
-		bottom = help
-	}
-
-	return tea.NewView(lipgloss.JoinHorizontal(lipgloss.Top, left, "  ", right) + "\n\n" + bottom)
+	return tea.NewView(lipgloss.JoinHorizontal(lipgloss.Top, left, "  ", right) + "\n\n" + help)
 }
 
 func (m State) menuView(theme Theme) string {
@@ -80,7 +78,7 @@ func (m State) menuView(theme Theme) string {
 	return strings.Join(append([]string{theme.Section.Render("Menu")}, items...), "\n\n")
 }
 
-func (m State) contentView(theme Theme) string {
+func (m State) contentView() string {
 	switch m.State.Selected {
 	case model.ScreenHome:
 		return HomeScreen()

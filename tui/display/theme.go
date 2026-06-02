@@ -6,6 +6,12 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
+type GameLetters struct {
+	Correct   lipgloss.Style
+	Misplaced lipgloss.Style
+	Incorrect lipgloss.Style
+}
+
 // Theme
 type Theme struct {
 	Border  lipgloss.Style
@@ -16,6 +22,7 @@ type Theme struct {
 	Muted   lipgloss.Style
 	Panel   lipgloss.Style
 	Button  lipgloss.Style
+	Letters GameLetters
 }
 
 func DefaultTheme() Theme {
@@ -28,6 +35,11 @@ func DefaultTheme() Theme {
 		Muted:   lipgloss.NewStyle().Foreground(lipgloss.Color("244")),
 		Panel:   lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(lipgloss.Color("236")).Padding(1, 2),
 		Button:  lipgloss.NewStyle().Foreground(lipgloss.Color("230")).Background(lipgloss.Color("62")).Padding(0, 2).Bold(true),
+		Letters: GameLetters{
+			Correct:   lipgloss.NewStyle().Foreground(lipgloss.Color("0")).Background(lipgloss.Color("34")),
+			Misplaced: lipgloss.NewStyle().Foreground(lipgloss.Color("0")).Background(lipgloss.Color("220")),
+			Incorrect: lipgloss.NewStyle().Foreground(lipgloss.Color("250")).Background(lipgloss.Color("240")),
+		},
 	}
 }
 
