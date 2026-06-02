@@ -69,6 +69,7 @@ func HandleEditKey(m model.State, msg tea.KeyMsg) (model.State, tea.Cmd) {
 		if m.Selected == model.ScreenAuth && m.Auth.Field == model.AuthFieldPassword {
 			m.Connected = true
 			m.Selected = model.ScreenGame
+			//TODO : Brancher la logique de récupération du mot à deviner ici.
 			m.Game.WordToGuess = "BRUME"
 			m.Editing = false
 			m.Focus = false

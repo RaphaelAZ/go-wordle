@@ -61,6 +61,7 @@ func SettingsScreen() string {
 }
 
 func GameScreen(m model.State) string {
+	// TODO: brancher ici aussi la logique de récupération du mot du jour.
 	if m.Game.WordToGuess == "" {
 		m.Game.WordToGuess = "BRUME"
 	}
@@ -78,6 +79,7 @@ func GameScreen(m model.State) string {
 
 	var gridLines []string
 	for i := 0; i < 6; i++ {
+		// essai actuel
 		if i == len(m.Game.TriedWords) {
 			padded := handlers.AddPaddingsToCurrentGuessedWord(m.Game.CurrentGuess)
 			gridLines = append(gridLines, theme.Accent.Render(handlers.ToWordleDisplayString(padded)))
