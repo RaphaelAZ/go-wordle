@@ -42,6 +42,37 @@ type authResponse struct {
 	Error string `json:"error"`
 }
 
+type wordResponse struct {
+	Word  string `json:"word"`
+	Error string `json:"error"`
+}
+
+func (c *Client) RandomWord() (string, error) {
+	req, err := http.NewRequest(http.MethodGet, c.baseURL+"/api/words/random", nil)
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("Authorization", "Bearer "+c.token)
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	var result wordResponse
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return "", err
+	}
+	if resp.StatusCode != http.StatusOK {
+		if result.Error != "" {
+			return "", fmt.Errorf("%s", result.Error)
+		}
+		return "", fmt.Errorf("fetch word failed (%d)", resp.StatusCode)
+	}
+	return result.Word, nil
+}
+
 func (c *Client) Login(email, password string) (string, error) {
 	body, err := json.Marshal(loginRequest{Email: email, Password: password})
 	if err != nil {

@@ -67,7 +67,24 @@ func SettingsScreen() string {
 	)
 }
 
+func GameLoadingScreen(m model.State) string {
+	theme := DefaultTheme()
+	width := m.Width
+	if width <= 0 {
+		width = 120
+	}
+	height := m.Height
+	if height <= 0 {
+		height = 30
+	}
+	msg := theme.Muted.Render("Chargement du mot en cours...")
+	return lipgloss.Place(width, height, lipgloss.Center, lipgloss.Center, msg)
+}
+
 func GameScreen(m model.State) string {
+	if m.Game.WordLoading {
+		return GameLoadingScreen(m)
+	}
 
 	width := m.Width
 	if width <= 0 {

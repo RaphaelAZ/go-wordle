@@ -20,3 +20,8 @@ type AuthResultMsg struct {
 	Token string
 	Err   error
 }
+
+type WordResultMsg struct {
+	Word string
+	Err  error
+}

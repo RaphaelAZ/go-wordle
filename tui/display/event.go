@@ -20,21 +20,29 @@ func NewModel() State {
 	cfg, _ := client.LoadConfig()
 	c := client.New()
 
-	s := model.State{
-		Selected: model.ScreenHome,
-		Game:     model.Game{WordToGuess: "BRUME"}, // TODO: remplacer par /words/random
-	}
+	s := model.State{Selected: model.ScreenHome}
 	if cfg.Token != "" {
 		c.SetToken(cfg.Token)
 		s.Token = cfg.Token
 		s.Connected = true
+		s.Game.WordLoading = true
 	}
 
 	return State{State: s, Client: c}
 }
 
+func (m State) fetchWord() tea.Cmd {
+	return func() tea.Msg {
+		word, err := m.Client.RandomWord()
+		return model.WordResultMsg{Word: word, Err: err}
+	}
+}
+
 // State Init
 func (m State) Init() tea.Cmd {
+	if m.State.Connected {
+		return m.fetchWord()
+	}
 	return nil
 }
 
@@ -63,11 +71,19 @@ func (m State) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		nm.Token = msg.Token
 		nm.Connected = true
 		nm.Selected = model.ScreenGame
+		nm.Game.WordLoading = true
 		nm.Auth.Error = ""
 		nm.Auth.Login = ""
 		nm.Auth.Password = ""
 		m.Client.SetToken(msg.Token)
 		_ = client.SaveConfig(&client.StoredConfig{Token: msg.Token})
+		return State{State: nm, Client: m.Client}, m.fetchWord()
+	case model.WordResultMsg:
+		nm := m.State
+		nm.Game.WordLoading = false
+		if msg.Err == nil {
+			nm.Game.WordToGuess = msg.Word
+		}
 		return State{State: nm, Client: m.Client}, nil
 	case tea.WindowSizeMsg:
 		nm, cmd := handlers.HandleWindowSize(m.State, msg)
