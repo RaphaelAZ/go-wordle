@@ -27,12 +27,19 @@ func HomeScreen() string {
 func AuthScreen(m model.State) string {
 	theme := DefaultTheme()
 	body := []string{
-		authFieldLine(theme, "Login", m.Auth.Login, m.Editing && m.Auth.Field == model.AuthFieldLogin, false),
+		authFieldLine(theme, "Email", m.Auth.Login, m.Editing && m.Auth.Field == model.AuthFieldLogin, false),
 		authFieldLine(theme, "Mot de passe", m.Auth.Password, m.Editing && m.Auth.Field == model.AuthFieldPassword, true),
 	}
 
+	if m.Auth.Error != "" {
+		body = append(body, theme.Error.Render("Erreur : "+m.Auth.Error))
+	}
+
 	footer := "Appuyez sur Entrée pour éditer"
-	if m.Editing {
+	switch {
+	case m.Auth.Loading:
+		footer = "Connexion en cours..."
+	case m.Editing:
 		footer = "Entrée: champ suivant, Échap: quitter l'édition"
 	}
 
@@ -61,10 +68,6 @@ func SettingsScreen() string {
 }
 
 func GameScreen(m model.State) string {
-	// TODO: brancher ici aussi la logique de récupération du mot du jour.
-	if m.Game.WordToGuess == "" {
-		m.Game.WordToGuess = "BRUME"
-	}
 
 	width := m.Width
 	if width <= 0 {

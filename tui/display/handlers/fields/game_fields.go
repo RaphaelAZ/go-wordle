@@ -47,7 +47,7 @@ func CompareInputToSolution(input string, solution string) []model.LetterStatus 
 }
 
 func AppendGuessLetter(m model.State, letter string) model.State {
-	if len([]rune(m.Game.CurrentGuess)) >= 5 {
+	if len([]rune(m.Game.CurrentGuess)) >= 5 && model.GamePlaying == m.Game.Status {
 		return m
 	}
 	m.Game.CurrentGuess += strings.ToUpper(letter)
@@ -56,14 +56,14 @@ func AppendGuessLetter(m model.State, letter string) model.State {
 
 func DeleteGuessLetter(m model.State) model.State {
 	r := []rune(m.Game.CurrentGuess)
-	if len(r) > 0 {
+	if len(r) > 0 && model.GamePlaying == m.Game.Status {
 		m.Game.CurrentGuess = string(r[:len(r)-1])
 	}
 	return m
 }
 
 func SubmitGuess(m model.State) model.State {
-	if len([]rune(m.Game.CurrentGuess)) != 5 {
+	if len([]rune(m.Game.CurrentGuess)) != 5 && model.GamePlaying == m.Game.Status {
 		return m
 	}
 	guess := m.Game.CurrentGuess

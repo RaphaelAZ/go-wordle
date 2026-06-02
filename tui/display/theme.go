@@ -20,6 +20,7 @@ type Theme struct {
 	Text    lipgloss.Style
 	Accent  lipgloss.Style
 	Muted   lipgloss.Style
+	Error   lipgloss.Style
 	Panel   lipgloss.Style
 	Button  lipgloss.Style
 	Letters GameLetters
@@ -33,6 +34,7 @@ func DefaultTheme() Theme {
 		Text:    lipgloss.NewStyle().Foreground(lipgloss.Color("252")),
 		Accent:  lipgloss.NewStyle().Foreground(lipgloss.Color("205")).Bold(true),
 		Muted:   lipgloss.NewStyle().Foreground(lipgloss.Color("244")),
+		Error:   lipgloss.NewStyle().Foreground(lipgloss.Color("196")).Bold(true),
 		Panel:   lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(lipgloss.Color("236")).Padding(1, 2),
 		Button:  lipgloss.NewStyle().Foreground(lipgloss.Color("230")).Background(lipgloss.Color("62")).Padding(0, 2).Bold(true),
 		Letters: GameLetters{

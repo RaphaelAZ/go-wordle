@@ -59,3 +59,9 @@ func (r *UserRepository) FindByID(id int) (*models.User, error) {
 	}
 	return user, nil
 }
+
+func (r *UserRepository) Count() (int, error) {
+	var count int
+	err := r.db.QueryRow(`SELECT COUNT(*) FROM users`).Scan(&count)
+	return count, err
+}

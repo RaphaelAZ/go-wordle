@@ -57,7 +57,7 @@ func handleGameKey(m model.State, msg tea.KeyMsg) (model.State, tea.Cmd) {
 	return m, nil
 }
 
-func HandleEditKey(m model.State, msg tea.KeyMsg) (model.State, tea.Cmd) {
+func HandleEditKey(m model.State, msg tea.KeyMsg, submitAuth func(email, password string) tea.Cmd) (model.State, tea.Cmd) {
 	switch msg.String() {
 	case "esc":
 		return exitEdit(m), nil
@@ -67,13 +67,11 @@ func HandleEditKey(m model.State, msg tea.KeyMsg) (model.State, tea.Cmd) {
 			return m, nil
 		}
 		if m.Selected == model.ScreenAuth && m.Auth.Field == model.AuthFieldPassword {
-			m.Connected = true
-			m.Selected = model.ScreenGame
-			//TODO : Brancher la logique de récupération du mot à deviner ici.
-			m.Game.WordToGuess = "BRUME"
+			m.Auth.Loading = true
+			m.Auth.Error = ""
 			m.Editing = false
 			m.Focus = false
-			return m, nil
+			return m, submitAuth(m.Auth.Login, m.Auth.Password)
 		}
 		return exitEdit(m), nil
 	case "tab", "down":
@@ -143,9 +141,11 @@ func selectByNumber(m model.State, s string) model.State {
 }
 
 func visibleScreens(m model.State) []model.Screen {
-	screens := []model.Screen{model.ScreenHome, model.ScreenAuth}
+	screens := []model.Screen{model.ScreenHome}
 	if m.Connected {
 		screens = append(screens, model.ScreenGame)
+	} else {
+		screens = append(screens, model.ScreenAuth)
 	}
 	screens = append(screens, model.ScreenSettings)
 	return screens
