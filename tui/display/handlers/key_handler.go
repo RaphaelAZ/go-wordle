@@ -36,8 +36,13 @@ func handleGameKey(m model.State, msg tea.KeyMsg) (model.State, tea.Cmd) {
 	}
 
 	if m.Game.Status != model.GamePlaying {
-		if msg.String() == "esc" {
+		switch msg.String() {
+		case "esc":
 			m.Selected = model.ScreenHome
+		case "left", "up", "k":
+			return prevScreen(m), nil
+		case "right", "down", "j", "tab":
+			return nextScreen(m), nil
 		}
 		return m, nil
 	}
@@ -48,6 +53,7 @@ func handleGameKey(m model.State, msg tea.KeyMsg) (model.State, tea.Cmd) {
 	case "right", "down", "tab":
 		return nextScreen(m), nil
 	case "esc":
+		m.Selected = model.ScreenHome
 		return m, nil
 	case "enter":
 		return fields.SubmitGuess(m), nil
