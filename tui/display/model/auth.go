@@ -22,6 +22,11 @@ type AuthResultMsg struct {
 }
 
 type WordResultMsg struct {
-	Word string
-	Err  error
+	WordID int
+	Word   string
+	Err    error
+}
+
+type GameSaveResultMsg struct {
+	Err error
 }
