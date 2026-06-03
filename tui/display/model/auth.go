@@ -6,10 +6,22 @@ type Auth struct {
 	Field    AuthField
 	Login    string
 	Password string
+	Error    string
+	Loading  bool
 }
 
 // Auth fields
 const (
-	AuthFieldLogin AuthField = iota // Increment values for each screen
+	AuthFieldLogin AuthField = iota
 	AuthFieldPassword
 )
+
+type AuthResultMsg struct {
+	Token string
+	Err   error
+}
+
+type WordResultMsg struct {
+	Word string
+	Err  error
+}

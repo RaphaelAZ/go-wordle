@@ -29,9 +29,9 @@ func main() {
 	}
 
 	// repositories
-	userRepo   := repository.NewUserRepository(db)
-	wordRepo   := repository.NewWordRepository(db)
-	gameRepo   := repository.NewGameRepository(db)
+	userRepo := repository.NewUserRepository(db)
+	wordRepo := repository.NewWordRepository(db)
+	gameRepo := repository.NewGameRepository(db)
 	configRepo := repository.NewConfigRepository(db)
 
 	// seed words on first run
@@ -39,16 +39,27 @@ func main() {
 	if count == 0 {
 		n, err := wordRepo.Seed(seeds.FrenchWords)
 		if err != nil {
-			log.Printf("seed warning: %v", err)
+			log.Printf("word seed warning: %v", err)
 		} else {
 			log.Printf("seeded %d words", n)
 		}
 	}
 
+	// seed users on first run
+	userCount, _ := userRepo.Count()
+	if userCount == 0 {
+		n, err := seeds.SeedUsers(userRepo, seeds.Users)
+		if err != nil {
+			log.Printf("user seed warning: %v", err)
+		} else {
+			log.Printf("seeded %d users", n)
+		}
+	}
+
 	// handlers
-	authHandler   := handlers.NewAuthHandler(userRepo)
-	wordHandler   := handlers.NewWordHandler(wordRepo)
-	gameHandler   := handlers.NewGameHandler(gameRepo)
+	authHandler := handlers.NewAuthHandler(userRepo)
+	wordHandler := handlers.NewWordHandler(wordRepo)
+	gameHandler := handlers.NewGameHandler(gameRepo)
 	configHandler := handlers.NewConfigHandler(configRepo)
 
 	r := gin.Default()
