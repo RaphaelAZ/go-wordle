@@ -26,6 +26,7 @@ func NewModel() State {
 	s := model.State{Selected: model.ScreenHome}
 	s.Settings = storedToSettings(cfg.Settings)
 	lang.Init(s.Settings.Language)
+	SetTheme(s.Settings.Theme)
 	if cfg.Token != "" {
 		c.SetToken(cfg.Token)
 		s.Token = cfg.Token
@@ -137,6 +138,7 @@ func (m State) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return State{State: nm, Client: m.Client}, nil
 	case model.SettingsChangedMsg:
 		lang.Init(m.State.Settings.Language)
+		SetTheme(m.State.Settings.Theme)
 		_ = client.SaveConfig(m.currentStoredConfig())
 		return m, nil
 	case model.GameSaveResultMsg:
