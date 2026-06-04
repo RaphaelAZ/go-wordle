@@ -75,6 +75,8 @@ func (m State) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		nm, cmd := handlers.HandleKey(m.State, msg)
 		var saveCmd tea.Cmd
 		if m.State.Game.Status == model.GamePlaying && nm.Game.Status != model.GamePlaying {
+			nm.Game.SaveLoading = true
+			nm.Game.SaveError = ""
 			saveCmd = State{State: nm, Client: m.Client}.saveGame()
 		}
 		return State{State: nm, Client: m.Client}, tea.Batch(cmd, saveCmd)
@@ -105,7 +107,12 @@ func (m State) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		return State{State: nm, Client: m.Client}, nil
 	case model.GameSaveResultMsg:
-		return m, nil
+		nm := m.State
+		nm.Game.SaveLoading = false
+		if msg.Err != nil {
+			nm.Game.SaveError = msg.Err.Error()
+		}
+		return State{State: nm, Client: m.Client}, nil
 	case tea.WindowSizeMsg:
 		nm, cmd := handlers.HandleWindowSize(m.State, msg)
 		return State{State: nm, Client: m.Client}, cmd

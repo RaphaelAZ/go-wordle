@@ -20,6 +20,8 @@ type Game struct {
 	UsedLetters  map[byte]LetterStatus
 	WordLoading  bool
 	StartedAt    time.Time
+	SaveLoading  bool
+	SaveError    string
 }
 
 type LetterStatus struct {

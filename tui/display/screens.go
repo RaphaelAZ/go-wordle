@@ -133,7 +133,16 @@ func GameScreen(m model.State) string {
 	title := theme.Title.Width(width).Render("Wordle")
 	footerLine := theme.Muted.Width(width).Align(lipgloss.Center).Render(footer)
 
-	return lipgloss.JoinVertical(lipgloss.Left, title, middle, footerLine)
+	lines := []string{title, middle, footerLine}
+	if m.Game.Status != model.GamePlaying {
+		if m.Game.SaveLoading {
+			lines = append(lines, theme.Muted.Width(width).Align(lipgloss.Center).Render("Sauvegarde en cours..."))
+		} else if m.Game.SaveError != "" {
+			lines = append(lines, theme.Error.Width(width).Align(lipgloss.Center).Render("Erreur de sauvegarde : "+m.Game.SaveError))
+		}
+	}
+
+	return lipgloss.JoinVertical(lipgloss.Left, lines...)
 }
 
 func renderKeyboard(m model.State, theme Theme) string {
