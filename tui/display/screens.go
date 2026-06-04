@@ -95,6 +95,10 @@ func SettingsScreen(m model.State) string {
 
 func GameLoadingScreen(m model.State) string {
 	theme := DefaultTheme()
+	msg := theme.Muted.Render(lang.T("game_loading"))
+	if m.Settings.DisplayMode == "compact" {
+		return msg
+	}
 	width := m.Width
 	if width <= 0 {
 		width = 120
@@ -103,22 +107,12 @@ func GameLoadingScreen(m model.State) string {
 	if height <= 0 {
 		height = 30
 	}
-	msg := theme.Muted.Render(lang.T("game_loading"))
 	return lipgloss.Place(width, height, lipgloss.Center, lipgloss.Center, msg)
 }
 
 func GameScreen(m model.State) string {
 	if m.Game.WordLoading {
 		return GameLoadingScreen(m)
-	}
-
-	width := m.Width
-	if width <= 0 {
-		width = 120
-	}
-	height := m.Height
-	if height <= 0 {
-		height = 30
 	}
 
 	theme := DefaultTheme()
@@ -148,6 +142,19 @@ func GameScreen(m model.State) string {
 		footer = lang.T("game_footer_lost", map[string]any{"Word": strings.ToUpper(m.Game.WordToGuess)})
 	}
 
+	if m.Settings.DisplayMode == "compact" {
+		return compactGameScreen(m, theme, gridLines, footer)
+	}
+
+	width := m.Width
+	if width <= 0 {
+		width = 120
+	}
+	height := m.Height
+	if height <= 0 {
+		height = 30
+	}
+
 	grid := lipgloss.NewStyle().Padding(1, 2).Render(strings.Join(gridLines, "\n"))
 	keyboard := lipgloss.NewStyle().Padding(1, 2).Render(renderKeyboard(m, theme))
 	middle := lipgloss.Place(width, height-4,
@@ -168,6 +175,22 @@ func GameScreen(m model.State) string {
 	}
 
 	return lipgloss.JoinVertical(lipgloss.Left, lines...)
+}
+
+func compactGameScreen(m model.State, theme Theme, gridLines []string, footer string) string {
+	grid := lipgloss.NewStyle().Padding(0, 2).Render(strings.Join(gridLines, "\n"))
+	kb := lipgloss.NewStyle().Padding(0, 1).Render(renderKeyboard(m, theme))
+	body := []string{
+		lipgloss.JoinHorizontal(lipgloss.Center, grid, "  ", kb),
+	}
+	if m.Game.Status != model.GamePlaying {
+		if m.Game.SaveLoading {
+			body = append(body, theme.Muted.Render(lang.T("game_saving")))
+		} else if m.Game.SaveError != "" {
+			body = append(body, theme.Error.Render(lang.T("game_save_error", map[string]any{"Error": m.Game.SaveError})))
+		}
+	}
+	return RenderApp(lang.T("game_title"), "", body, theme.Muted.Render(footer))
 }
 
 func renderKeyboard(m model.State, theme Theme) string {

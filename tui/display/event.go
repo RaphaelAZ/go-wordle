@@ -161,11 +161,33 @@ func (m State) View() tea.View {
 	help := theme.Muted.Render(lang.T("nav_help"))
 
 	if m.State.Selected == model.ScreenGame {
-		// Full screen
+		if m.State.Settings.DisplayMode == "normal" {
+			nav := m.topNavView(theme)
+			// Réduire la hauteur de 2 (nav + barre d'aide) pour éviter le débordement
+			gs := m.State
+			gs.Height = max(10, m.State.Height-2)
+			content := GameScreen(gs)
+			return tea.NewView(lipgloss.JoinVertical(lipgloss.Left, nav, content, help))
+		}
+		// compact: side menu + game content (RenderApp already adds the border)
 		content := GameScreen(m.State)
-		return tea.NewView(content + "\n\n" + help)
+		menu := m.menuView(theme)
+		left := theme.Panel.Width(24).Render(menu)
+		return tea.NewView(lipgloss.JoinHorizontal(lipgloss.Top, left, "  ", content) + "\n\n" + help)
 	}
 
+	if m.State.Settings.DisplayMode == "normal" {
+		nav := m.topNavView(theme)
+		content := m.contentView()
+		w := m.State.Width
+		if w <= 0 {
+			w = 100
+		}
+		body := theme.Border.Width(w - 4).Render(content)
+		return tea.NewView(lipgloss.JoinVertical(lipgloss.Left, nav, body, help))
+	}
+
+	// compact: side panel + content
 	menu := m.menuView(theme)
 	content := m.contentView()
 	left := theme.Panel.Width(24).Render(menu)
@@ -192,6 +214,20 @@ func (m State) menuView(theme Theme) string {
 	}
 
 	return strings.Join(append([]string{theme.Section.Render(lang.T("menu_title"))}, items...), "\n\n")
+}
+
+func (m State) topNavView(theme Theme) string {
+	visible := visibleScreens(m.State)
+	items := make([]string, 0, len(visible))
+	for i, screen := range visible {
+		label := fmt.Sprintf(" %d. %s ", i+1, screenLabel(screen))
+		if screen == m.State.Selected {
+			items = append(items, theme.Button.Render(label))
+		} else {
+			items = append(items, theme.Muted.Render(label))
+		}
+	}
+	return lipgloss.JoinHorizontal(lipgloss.Center, items...)
 }
 
 func (m State) contentView() string {
