@@ -1,8 +1,10 @@
 package display
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
+	"time"
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
@@ -33,8 +35,19 @@ func NewModel() State {
 
 func (m State) fetchWord() tea.Cmd {
 	return func() tea.Msg {
-		word, err := m.Client.RandomWord()
-		return model.WordResultMsg{Word: word, Err: err}
+		id, word, err := m.Client.RandomWord()
+		return model.WordResultMsg{WordID: id, Word: word, Err: err}
+	}
+}
+
+func (m State) saveGame() tea.Cmd {
+	attempts, _ := json.Marshal(m.State.Game.TriedWords)
+	duration := int(time.Since(m.State.Game.StartedAt).Seconds())
+	wordID := m.State.Game.WordID
+	won := m.State.Game.Status == model.GameWon
+	return func() tea.Msg {
+		err := m.Client.SaveGame(wordID, attempts, won, duration)
+		return model.GameSaveResultMsg{Err: err}
 	}
 }
 
@@ -60,7 +73,13 @@ func (m State) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return State{State: nm, Client: m.Client}, cmd
 		}
 		nm, cmd := handlers.HandleKey(m.State, msg)
-		return State{State: nm, Client: m.Client}, cmd
+		var saveCmd tea.Cmd
+		if m.State.Game.Status == model.GamePlaying && nm.Game.Status != model.GamePlaying {
+			nm.Game.SaveLoading = true
+			nm.Game.SaveError = ""
+			saveCmd = State{State: nm, Client: m.Client}.saveGame()
+		}
+		return State{State: nm, Client: m.Client}, tea.Batch(cmd, saveCmd)
 	case model.AuthResultMsg:
 		nm := m.State
 		nm.Auth.Loading = false
@@ -82,7 +101,16 @@ func (m State) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		nm := m.State
 		nm.Game.WordLoading = false
 		if msg.Err == nil {
+			nm.Game.WordID = msg.WordID
 			nm.Game.WordToGuess = msg.Word
+			nm.Game.StartedAt = time.Now()
+		}
+		return State{State: nm, Client: m.Client}, nil
+	case model.GameSaveResultMsg:
+		nm := m.State
+		nm.Game.SaveLoading = false
+		if msg.Err != nil {
+			nm.Game.SaveError = msg.Err.Error()
 		}
 		return State{State: nm, Client: m.Client}, nil
 	case tea.WindowSizeMsg:

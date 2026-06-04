@@ -43,34 +43,63 @@ type authResponse struct {
 }
 
 type wordResponse struct {
+	ID    int    `json:"id"`
 	Word  string `json:"word"`
 	Error string `json:"error"`
 }
 
-func (c *Client) RandomWord() (string, error) {
+func (c *Client) RandomWord() (int, string, error) {
 	req, err := http.NewRequest(http.MethodGet, c.baseURL+"/api/words/random", nil)
 	if err != nil {
-		return "", err
+		return 0, "", err
 	}
 	req.Header.Set("Authorization", "Bearer "+c.token)
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return "", err
+		return 0, "", err
 	}
 	defer resp.Body.Close()
 
 	var result wordResponse
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return "", err
+		return 0, "", err
 	}
 	if resp.StatusCode != http.StatusOK {
 		if result.Error != "" {
-			return "", fmt.Errorf("%s", result.Error)
+			return 0, "", fmt.Errorf("%s", result.Error)
 		}
-		return "", fmt.Errorf("fetch word failed (%d)", resp.StatusCode)
+		return 0, "", fmt.Errorf("fetch word failed (%d)", resp.StatusCode)
 	}
-	return result.Word, nil
+	return result.ID, result.Word, nil
+}
+
+func (c *Client) SaveGame(wordID int, attempts json.RawMessage, won bool, duration int) error {
+	body, err := json.Marshal(map[string]any{
+		"word_id":  wordID,
+		"attempts": attempts,
+		"won":      won,
+		"duration": duration,
+	})
+	if err != nil {
+		return err
+	}
+	req, err := http.NewRequest(http.MethodPost, c.baseURL+"/api/games", bytes.NewReader(body))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Authorization", "Bearer "+c.token)
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusCreated {
+		return fmt.Errorf("save game failed (%d)", resp.StatusCode)
+	}
+	return nil
 }
 
 func (c *Client) Login(email, password string) (string, error) {
