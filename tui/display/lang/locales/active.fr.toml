@@ -1,0 +1,89 @@
+[nav_help]
+other = "Navigation: ↑ ↓ ← → / Tab, chiffres 1-4, Enter, q pour quitter"
+
+[menu_title]
+other = "Menu"
+
+[screen_home]
+other = "Accueil"
+
+[screen_auth]
+other = "Connexion"
+
+[screen_game]
+other = "Jeu"
+
+[screen_settings]
+other = "Paramètres"
+
+[home_title]
+other = "Go Wordle"
+
+[home_subtitle]
+other = "Interface terminal du projet"
+
+[auth_title]
+other = "Authentification"
+
+[auth_subtitle]
+other = "Connexion au compte utilisateur"
+
+[auth_field_email]
+other = "Email"
+
+[auth_field_password]
+other = "Mot de passe"
+
+[auth_error]
+other = "Erreur : {{.Error}}"
+
+[auth_footer_idle]
+other = "Appuyez sur Entrée pour éditer"
+
+[auth_footer_loading]
+other = "Connexion en cours..."
+
+[auth_footer_editing]
+other = "Entrée: champ suivant, Échap: quitter l'édition"
+
+[settings_title]
+other = "Paramètres"
+
+[settings_subtitle]
+other = "Configuration visuelle de l'application"
+
+[settings_field_theme]
+other = "Thème"
+
+[settings_field_language]
+other = "Langue"
+
+[settings_field_display]
+other = "Mode d'affichage"
+
+[settings_footer_idle]
+other = "Appuyez sur Entrée pour éditer"
+
+[settings_footer_editing]
+other = "↑↓ / Tab: champ suivant, ←→ / Espace: changer, Entrée / Échap: terminer"
+
+[game_title]
+other = "Wordle"
+
+[game_footer_playing]
+other = "Tapez une lettre, Entrée pour valider, Échap pour le menu"
+
+[game_footer_won]
+other = "Bravo ! Vous avez trouvé le mot !"
+
+[game_footer_lost]
+other = "Perdu ! Le mot était : {{.Word}}"
+
+[game_loading]
+other = "Chargement du mot en cours..."
+
+[game_saving]
+other = "Sauvegarde en cours..."
+
+[game_save_error]
+other = "Erreur de sauvegarde : {{.Error}}"

@@ -10,6 +10,7 @@ import (
 	"charm.land/lipgloss/v2"
 	"gowordle.com/client"
 	"gowordle.com/display/handlers"
+	"gowordle.com/display/lang"
 	"gowordle.com/display/model"
 )
 
@@ -23,6 +24,8 @@ func NewModel() State {
 	c := client.New()
 
 	s := model.State{Selected: model.ScreenHome}
+	s.Settings = storedToSettings(cfg.Settings)
+	lang.Init(s.Settings.Language)
 	if cfg.Token != "" {
 		c.SetToken(cfg.Token)
 		s.Token = cfg.Token
@@ -31,6 +34,31 @@ func NewModel() State {
 	}
 
 	return State{State: s, Client: c}
+}
+
+func storedToSettings(s client.StoredSettings) model.Settings {
+	settings := model.DefaultSettings()
+	if s.Theme != "" {
+		settings.Theme = s.Theme
+	}
+	if s.Language != "" {
+		settings.Language = s.Language
+	}
+	if s.DisplayMode != "" {
+		settings.DisplayMode = s.DisplayMode
+	}
+	return settings
+}
+
+func (m State) currentStoredConfig() *client.StoredConfig {
+	return &client.StoredConfig{
+		Token: m.State.Token,
+		Settings: client.StoredSettings{
+			Theme:       m.State.Settings.Theme,
+			Language:    m.State.Settings.Language,
+			DisplayMode: m.State.Settings.DisplayMode,
+		},
+	}
 }
 
 func (m State) fetchWord() tea.Cmd {
@@ -95,8 +123,9 @@ func (m State) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		nm.Auth.Login = ""
 		nm.Auth.Password = ""
 		m.Client.SetToken(msg.Token)
-		_ = client.SaveConfig(&client.StoredConfig{Token: msg.Token})
-		return State{State: nm, Client: m.Client}, m.fetchWord()
+		updated := State{State: nm, Client: m.Client}
+		_ = client.SaveConfig(updated.currentStoredConfig())
+		return updated, updated.fetchWord()
 	case model.WordResultMsg:
 		nm := m.State
 		nm.Game.WordLoading = false
@@ -106,6 +135,10 @@ func (m State) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			nm.Game.StartedAt = time.Now()
 		}
 		return State{State: nm, Client: m.Client}, nil
+	case model.SettingsChangedMsg:
+		lang.Init(m.State.Settings.Language)
+		_ = client.SaveConfig(m.currentStoredConfig())
+		return m, nil
 	case model.GameSaveResultMsg:
 		nm := m.State
 		nm.Game.SaveLoading = false
@@ -123,7 +156,7 @@ func (m State) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 // View (render UI)
 func (m State) View() tea.View {
 	theme := DefaultTheme()
-	help := theme.Muted.Render("Navigation: ↑ ↓ ← → / Tab, chiffres 1-4, Enter, q pour quitter")
+	help := theme.Muted.Render(lang.T("nav_help"))
 
 	if m.State.Selected == model.ScreenGame {
 		// Full screen
@@ -153,10 +186,10 @@ func (m State) menuView(theme Theme) string {
 			style = theme.Accent
 			prefix = "> "
 		}
-		items = append(items, style.Render(prefix+fmt.Sprintf("%d. %s", i+1, model.ScreenLabels[screen])))
+		items = append(items, style.Render(prefix+fmt.Sprintf("%d. %s", i+1, screenLabel(screen))))
 	}
 
-	return strings.Join(append([]string{theme.Section.Render("Menu")}, items...), "\n\n")
+	return strings.Join(append([]string{theme.Section.Render(lang.T("menu_title"))}, items...), "\n\n")
 }
 
 func (m State) contentView() string {
@@ -168,7 +201,7 @@ func (m State) contentView() string {
 	case model.ScreenGame:
 		return GameScreen(m.State)
 	case model.ScreenSettings:
-		return SettingsScreen()
+		return SettingsScreen(m.State)
 	default:
 		return HomeScreen()
 	}
@@ -183,6 +216,20 @@ func visibleScreens(state model.State) []model.Screen {
 	}
 	screens = append(screens, model.ScreenSettings)
 	return screens
+}
+
+func screenLabel(s model.Screen) string {
+	switch s {
+	case model.ScreenHome:
+		return lang.T("screen_home")
+	case model.ScreenAuth:
+		return lang.T("screen_auth")
+	case model.ScreenGame:
+		return lang.T("screen_game")
+	case model.ScreenSettings:
+		return lang.T("screen_settings")
+	}
+	return ""
 }
 
 // Init tea program

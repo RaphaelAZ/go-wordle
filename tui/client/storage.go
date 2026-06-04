@@ -8,8 +8,15 @@ import (
 
 const configFile = "wordle-go.json"
 
+type StoredSettings struct {
+	Theme       string `json:"theme,omitempty"`
+	Language    string `json:"language,omitempty"`
+	DisplayMode string `json:"display_mode,omitempty"`
+}
+
 type StoredConfig struct {
-	Token string `json:"token,omitempty"`
+	Token    string         `json:"token,omitempty"`
+	Settings StoredSettings `json:"settings,omitempty"`
 }
 
 func configPath() (string, error) {

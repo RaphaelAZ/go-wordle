@@ -5,65 +5,91 @@ import (
 
 	"charm.land/lipgloss/v2"
 	"gowordle.com/display/handlers"
+	"gowordle.com/display/lang"
 	"gowordle.com/display/model"
 )
 
 func HomeScreen() string {
 	theme := DefaultTheme()
 	body := []string{
-		theme.Section.Render("[1] Accueil"),
-		theme.Section.Render("[2] Connexion"),
-		theme.Section.Render("[3] Paramètres"),
+		theme.Section.Render("[1] " + lang.T("screen_home")),
+		theme.Section.Render("[2] " + lang.T("screen_auth")),
+		theme.Section.Render("[3] " + lang.T("screen_settings")),
 	}
 
 	return RenderApp(
-		"Go Wordle",
-		"Interface terminal du projet",
+		lang.T("home_title"),
+		lang.T("home_subtitle"),
 		body,
-		theme.Accent.Render("Navigation au clavier à venir"),
+		"",
 	)
 }
 
 func AuthScreen(m model.State) string {
 	theme := DefaultTheme()
 	body := []string{
-		authFieldLine(theme, "Email", m.Auth.Login, m.Editing && m.Auth.Field == model.AuthFieldLogin, false),
-		authFieldLine(theme, "Mot de passe", m.Auth.Password, m.Editing && m.Auth.Field == model.AuthFieldPassword, true),
+		authFieldLine(theme, lang.T("auth_field_email"), m.Auth.Login, m.Editing && m.Auth.Field == model.AuthFieldLogin, false),
+		authFieldLine(theme, lang.T("auth_field_password"), m.Auth.Password, m.Editing && m.Auth.Field == model.AuthFieldPassword, true),
 	}
 
 	if m.Auth.Error != "" {
-		body = append(body, theme.Error.Render("Erreur : "+m.Auth.Error))
+		body = append(body, theme.Error.Render(lang.T("auth_error", map[string]any{"Error": m.Auth.Error})))
 	}
 
-	footer := "Appuyez sur Entrée pour éditer"
+	footer := lang.T("auth_footer_idle")
 	switch {
 	case m.Auth.Loading:
-		footer = "Connexion en cours..."
+		footer = lang.T("auth_footer_loading")
 	case m.Editing:
-		footer = "Entrée: champ suivant, Échap: quitter l'édition"
+		footer = lang.T("auth_footer_editing")
 	}
 
 	return RenderApp(
-		"Authentification",
-		"Connexion au compte utilisateur",
+		lang.T("auth_title"),
+		lang.T("auth_subtitle"),
 		body,
 		theme.Muted.Render(footer),
 	)
 }
 
-func SettingsScreen() string {
+func SettingsScreen(m model.State) string {
 	theme := DefaultTheme()
-	body := []string{
-		theme.Text.Render("Thème          : clair / sombre"),
-		theme.Text.Render("Langue         : fr"),
-		theme.Text.Render("Mode d'affichage: terminal compact"),
+
+	type field struct {
+		label string
+		value string
+		id    model.SettingsField
+	}
+	fieldDefs := []field{
+		{label: lang.T("settings_field_theme"), value: m.Settings.Theme, id: model.SettingsFieldTheme},
+		{label: lang.T("settings_field_language"), value: m.Settings.Language, id: model.SettingsFieldLanguage},
+		{label: lang.T("settings_field_display"), value: m.Settings.DisplayMode, id: model.SettingsFieldDisplayMode},
+	}
+
+	var body []string
+	for _, f := range fieldDefs {
+		active := m.Editing && m.Settings.Field == f.id
+		style := theme.Text
+		prefix := "  "
+		hint := ""
+		if active {
+			style = theme.Accent
+			prefix = "> "
+			hint = "  ← →"
+		}
+		body = append(body, style.Render(prefix+f.label+" : "+f.value+hint))
+	}
+
+	footer := lang.T("settings_footer_idle")
+	if m.Editing {
+		footer = lang.T("settings_footer_editing")
 	}
 
 	return RenderApp(
-		"Paramètres",
-		"Configuration visuelle de l'application",
+		lang.T("settings_title"),
+		lang.T("settings_subtitle"),
 		body,
-		theme.Muted.Render("Prévu pour être branché sur un stockage local JSON"),
+		theme.Muted.Render(footer),
 	)
 }
 
@@ -77,7 +103,7 @@ func GameLoadingScreen(m model.State) string {
 	if height <= 0 {
 		height = 30
 	}
-	msg := theme.Muted.Render("Chargement du mot en cours...")
+	msg := theme.Muted.Render(lang.T("game_loading"))
 	return lipgloss.Place(width, height, lipgloss.Center, lipgloss.Center, msg)
 }
 
@@ -99,7 +125,6 @@ func GameScreen(m model.State) string {
 
 	var gridLines []string
 	for i := 0; i < 6; i++ {
-		// essai actuel
 		if i == len(m.Game.TriedWords) {
 			padded := handlers.AddPaddingsToCurrentGuessedWord(m.Game.CurrentGuess)
 			gridLines = append(gridLines, theme.Accent.Render(handlers.ToWordleDisplayString(padded)))
@@ -116,11 +141,11 @@ func GameScreen(m model.State) string {
 		gridLines = append(gridLines, strings.Join(letters, " "))
 	}
 
-	footer := "Tapez une lettre, Entrée pour valider, Échap pour le menu"
+	footer := lang.T("game_footer_playing")
 	if m.Game.Status == model.GameWon {
-		footer = "Bravo ! Vous avez trouvé le mot !"
+		footer = lang.T("game_footer_won")
 	} else if m.Game.Status == model.GameLost {
-		footer = "Perdu ! Le mot était : " + strings.ToUpper(m.Game.WordToGuess)
+		footer = lang.T("game_footer_lost", map[string]any{"Word": strings.ToUpper(m.Game.WordToGuess)})
 	}
 
 	grid := lipgloss.NewStyle().Padding(1, 2).Render(strings.Join(gridLines, "\n"))
@@ -130,15 +155,15 @@ func GameScreen(m model.State) string {
 		lipgloss.JoinHorizontal(lipgloss.Center, grid, "    ", keyboard),
 	)
 
-	title := theme.Title.Width(width).Render("Wordle")
+	title := theme.Title.Width(width).Render(lang.T("game_title"))
 	footerLine := theme.Muted.Width(width).Align(lipgloss.Center).Render(footer)
 
 	lines := []string{title, middle, footerLine}
 	if m.Game.Status != model.GamePlaying {
 		if m.Game.SaveLoading {
-			lines = append(lines, theme.Muted.Width(width).Align(lipgloss.Center).Render("Sauvegarde en cours..."))
+			lines = append(lines, theme.Muted.Width(width).Align(lipgloss.Center).Render(lang.T("game_saving")))
 		} else if m.Game.SaveError != "" {
-			lines = append(lines, theme.Error.Width(width).Align(lipgloss.Center).Render("Erreur de sauvegarde : "+m.Game.SaveError))
+			lines = append(lines, theme.Error.Width(width).Align(lipgloss.Center).Render(lang.T("game_save_error", map[string]any{"Error": m.Game.SaveError})))
 		}
 	}
 
@@ -179,7 +204,7 @@ func Dashboard() string {
 		"",
 		GameScreen(model.State{}),
 		"",
-		SettingsScreen(),
+		SettingsScreen(model.State{}),
 	}
 
 	return strings.Join(sections, "\n\n")

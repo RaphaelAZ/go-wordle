@@ -1,0 +1,89 @@
+[nav_help]
+other = "Navigation: ↑ ↓ ← → / Tab, digits 1-4, Enter, q to quit"
+
+[menu_title]
+other = "Menu"
+
+[screen_home]
+other = "Home"
+
+[screen_auth]
+other = "Login"
+
+[screen_game]
+other = "Game"
+
+[screen_settings]
+other = "Settings"
+
+[home_title]
+other = "Go Wordle"
+
+[home_subtitle]
+other = "Terminal interface"
+
+[auth_title]
+other = "Authentication"
+
+[auth_subtitle]
+other = "Sign in to your account"
+
+[auth_field_email]
+other = "Email"
+
+[auth_field_password]
+other = "Password"
+
+[auth_error]
+other = "Error: {{.Error}}"
+
+[auth_footer_idle]
+other = "Press Enter to edit"
+
+[auth_footer_loading]
+other = "Signing in..."
+
+[auth_footer_editing]
+other = "Enter: next field, Esc: cancel"
+
+[settings_title]
+other = "Settings"
+
+[settings_subtitle]
+other = "Visual configuration"
+
+[settings_field_theme]
+other = "Theme"
+
+[settings_field_language]
+other = "Language"
+
+[settings_field_display]
+other = "Display mode"
+
+[settings_footer_idle]
+other = "Press Enter to edit"
+
+[settings_footer_editing]
+other = "↑↓ / Tab: next field, ←→ / Space: change, Enter / Esc: done"
+
+[game_title]
+other = "Wordle"
+
+[game_footer_playing]
+other = "Type a letter, Enter to submit, Esc for menu"
+
+[game_footer_won]
+other = "Well done! You found the word!"
+
+[game_footer_lost]
+other = "Game over! The word was: {{.Word}}"
+
+[game_loading]
+other = "Loading word..."
+
+[game_saving]
+other = "Saving..."
+
+[game_save_error]
+other = "Save error: {{.Error}}"
