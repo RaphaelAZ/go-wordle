@@ -61,7 +61,7 @@ func SettingsScreen(m model.State) string {
 		id    model.SettingsField
 	}
 	fieldDefs := []field{
-		{label: lang.T("settings_field_theme"), value: m.Settings.Theme, id: model.SettingsFieldTheme},
+		{label: lang.T("settings_field_theme"), value: lang.T("settings_theme_" + m.Settings.Theme), id: model.SettingsFieldTheme},
 		{label: lang.T("settings_field_language"), value: m.Settings.Language, id: model.SettingsFieldLanguage},
 		{label: lang.T("settings_field_display"), value: m.Settings.DisplayMode, id: model.SettingsFieldDisplayMode},
 	}

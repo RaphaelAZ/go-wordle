@@ -55,6 +55,12 @@ other = "Visual configuration"
 [settings_field_theme]
 other = "Theme"
 
+[settings_theme_sombre]
+other = "dark"
+
+[settings_theme_clair]
+other = "light"
+
 [settings_field_language]
 other = "Language"
 
