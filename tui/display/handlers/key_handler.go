@@ -6,6 +6,10 @@ import (
 	"gowordle.com/display/model"
 )
 
+func settingsChangedCmd() tea.Cmd {
+	return func() tea.Msg { return model.SettingsChangedMsg{} }
+}
+
 func HandleKey(m model.State, msg tea.KeyMsg) (model.State, tea.Cmd) {
 	if m.Selected == model.ScreenGame {
 		return handleGameKey(m, msg)
@@ -25,6 +29,9 @@ func HandleKey(m model.State, msg tea.KeyMsg) (model.State, tea.Cmd) {
 		m.Focus = true
 		if m.Selected == model.ScreenAuth {
 			m.Auth.Field = model.AuthFieldLogin
+		}
+		if m.Selected == model.ScreenSettings {
+			m.Settings.Field = model.SettingsFieldTheme
 		}
 	}
 	return m, nil
@@ -71,6 +78,10 @@ func handleGameKey(m model.State, msg tea.KeyMsg) (model.State, tea.Cmd) {
 }
 
 func HandleEditKey(m model.State, msg tea.KeyMsg, submitAuth func(email, password string) tea.Cmd) (model.State, tea.Cmd) {
+	if m.Selected == model.ScreenSettings {
+		return handleSettingsEditKey(m, msg)
+	}
+
 	switch msg.String() {
 	case "esc":
 		return exitEdit(m), nil
@@ -102,6 +113,23 @@ func HandleEditKey(m model.State, msg tea.KeyMsg, submitAuth func(email, passwor
 
 	if m.Selected == model.ScreenAuth && len([]rune(msg.String())) == 1 {
 		return fields.AppendAuthValue(m, msg.String()), nil
+	}
+	return m, nil
+}
+
+func handleSettingsEditKey(m model.State, msg tea.KeyMsg) (model.State, tea.Cmd) {
+	switch msg.String() {
+	case "esc", "enter":
+		return exitEdit(m), nil
+	case "tab", "down", "j":
+		m.Settings.Field = fields.NextSettingsField(m.Settings.Field)
+		return m, nil
+	case "up", "k":
+		m.Settings.Field = fields.PrevSettingsField(m.Settings.Field)
+		return m, nil
+	case "left", "right", " ":
+		m.Settings = fields.CycleSettingsValue(m.Settings)
+		return m, settingsChangedCmd()
 	}
 	return m, nil
 }

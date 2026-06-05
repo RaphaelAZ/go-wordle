@@ -11,4 +11,5 @@ type State struct {
 	Token     string
 	Auth      Auth
 	Game      Game
+	Settings  Settings
 }
