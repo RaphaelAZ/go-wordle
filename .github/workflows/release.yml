@@ -30,6 +30,6 @@ jobs:
           install-only: true
 
       - name: Publish release
-        run: goreleaser release --clean --ids tui
+        run: goreleaser release --clean --config .goreleaser.tui.yaml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

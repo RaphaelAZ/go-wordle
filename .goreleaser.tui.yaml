@@ -1,0 +1,35 @@
+version: 2
+
+project_name: go-wordle
+
+builds:
+  - id: tui
+    dir: ./tui
+    main: .
+    binary: go-wordle
+    env:
+      - CGO_ENABLED=0
+    flags:
+      - -trimpath
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - id: tui
+    ids:
+      - tui
+    formats:
+      - tar.gz
+      - zip
+
+checksum:
+  name_template: checksums.txt
+
+changelog:
+  use: git
+  sort: asc
