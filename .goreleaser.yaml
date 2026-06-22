@@ -5,7 +5,7 @@ project_name: go-wordle
 builds:
   - id: backend
     dir: ./backend
-    main: ./cmd/server
+    main: ./server
     binary: go-wordle-server
     env:
       - CGO_ENABLED=0

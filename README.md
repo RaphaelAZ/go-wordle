@@ -6,25 +6,25 @@ Projet Go en cours de réalisation.
 
 ### CLI en mode TUI
 
-- [ ] Ecran d'accueil avec les options possibles
-- [ ] Ecran d'authentification pour se connecter à son compte
-- [ ] Ecran de paramètres pour configurer l'application
-- [ ] Ecrans qui proposent la fonctionnalité principale de l'application
+- [X] Ecran d'accueil avec les options possibles
+- [X] Ecran d'authentification pour se connecter à son compte
+- [X] Ecran de paramètres pour configurer l'application
+- [X] Ecrans qui proposent la fonctionnalité principale de l'application
 - [ ] Stockage des paramètres dans le dossier personnel de l'utilisateur au format JSON
 - [ ] Stockage de l'état de l'application dans le dossier personnel de l'utilisateur au format JSON
 - [ ] Import et export de la configuration et de l'état de l'application depuis et vers le serveur
-- [ ] Interface utilisateur agréable, colorée, dynamique et facile à utiliser
+- [X] Interface utilisateur agréable, colorée, dynamique et facile à utiliser
 
 ### Serveur d'API REST
 
-- [ ] Endpoints d'authentification
+- [X] Endpoints d'authentification
 - [ ] Endpoints pour récupérer et mettre à jour les données de l'application
-- [ ] Stockage de données dans une base de données PostgreSQL
+- [X] Stockage de données dans une base de données PostgreSQL
 - [ ] Endpoints pour importer et exporter la configuration et l'état de l'application depuis et vers le client CLI
 
 ### Livraison et déploiement
 
-- [ ] Nécessite de cross-compiler le serveur pour tourner sous Linux
+- [X] Nécessite de cross-compiler le serveur pour tourner sous Linux
 - [ ] Héberger le serveur gratuitement
 - [ ] Cross-compiler la CLI pour Windows, Linux et MacOS
 - [ ] Publier la CLI sur GitHub dans la section Releases du dépôt
