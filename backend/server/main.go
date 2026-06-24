@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"strings"
 
 	"github.com/RaphaelAZ/go-wordle/backend/internal/database"
 	"github.com/RaphaelAZ/go-wordle/backend/internal/handlers"
@@ -93,7 +94,16 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
-	addr := ip + ":" + port
+
+	var addr string
+	if ip == "" {
+		addr = ":" + port
+	} else if strings.Contains(ip, ":") {
+		addr = "[" + ip + "]:" + port
+	} else {
+		addr = ip + ":" + port
+	}
+
 	log.Printf("server listening on %s", addr)
 	if err := r.Run(addr); err != nil {
 		log.Fatalf("server error: %v", err)
