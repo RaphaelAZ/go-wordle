@@ -45,5 +45,6 @@ jobs:
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
           local-dir: backend/
           server-dir: /home/gowordle/www/gowordle/backend/
