@@ -48,3 +48,11 @@ jobs:
           protocol: ftps
           local-dir: backend/
           server-dir: /home/gowordle/www/gowordle/backend/
+
+      - name: Fix permissions via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: chmod +x /home/gowordle/www/gowordle/backend/go-wordle-server
