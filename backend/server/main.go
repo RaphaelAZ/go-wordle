@@ -88,12 +88,14 @@ func main() {
 		}
 	}
 
+	ip := os.Getenv("IP")
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
-	log.Printf("server listening on :%s", port)
-	if err := r.Run(":" + port); err != nil {
+	addr := ip + ":" + port
+	log.Printf("server listening on %s", addr)
+	if err := r.Run(addr); err != nil {
 		log.Fatalf("server error: %v", err)
 	}
 }
