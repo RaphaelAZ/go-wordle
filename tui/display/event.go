@@ -143,12 +143,15 @@ func (m State) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			nm.Game.WordError = msg.Err.Error()
 		}
 		return State{State: nm, Client: m.Client}, nil
+	case model.RestartGameMsg:
+		return m, m.fetchWord()
 	case model.LogoutMsg:
 		nm := m.State
 		nm.Token = ""
 		nm.Connected = false
 		nm.Game = model.Game{}
 		nm.Selected = model.ScreenAuth
+		nm.Settings.Field = model.SettingsFieldTheme
 		m.Client.SetToken("")
 		updated := State{State: nm, Client: m.Client}
 		_ = client.SaveConfig(updated.currentStoredConfig())

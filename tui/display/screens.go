@@ -205,6 +205,7 @@ func GameScreen(m model.State) string {
 		} else if m.Game.SaveError != "" {
 			lines = append(lines, theme.Error.Width(width).Align(lipgloss.Center).Render(lang.T("game_save_error", map[string]any{"Error": m.Game.SaveError})))
 		}
+		lines = append(lines, theme.Button.Width(width).Align(lipgloss.Center).Render(lang.T("game_restart_button")))
 	}
 
 	return lipgloss.JoinVertical(lipgloss.Left, lines...)
@@ -222,6 +223,7 @@ func compactGameScreen(m model.State, theme Theme, gridLines []string, footer st
 		} else if m.Game.SaveError != "" {
 			body = append(body, theme.Error.Render(lang.T("game_save_error", map[string]any{"Error": m.Game.SaveError})))
 		}
+		body = append(body, theme.Button.Render(lang.T("game_restart_button")))
 	}
 	return RenderApp(lang.T("game_title"), "", body, theme.Muted.Render(footer))
 }

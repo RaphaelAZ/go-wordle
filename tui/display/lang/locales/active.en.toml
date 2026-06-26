@@ -88,6 +88,9 @@ other = "Well done! You found the word!"
 [game_footer_lost]
 other = "Game over! The word was: {{.Word}}"
 
+[game_restart_button]
+other = "[ r ]  New game"
+
 [game_loading]
 other = "Loading word..."
 

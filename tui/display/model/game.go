@@ -30,3 +30,5 @@ type LetterStatus struct {
 	IsInSolution bool
 	Letter       uint8
 }
+
+type RestartGameMsg struct{}

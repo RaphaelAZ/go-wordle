@@ -14,6 +14,10 @@ func logoutCmd() tea.Cmd {
 	return func() tea.Msg { return model.LogoutMsg{} }
 }
 
+func restartGameCmd() tea.Cmd {
+	return func() tea.Msg { return model.RestartGameMsg{} }
+}
+
 func HandleKey(m model.State, msg tea.KeyMsg) (model.State, tea.Cmd) {
 	if m.Selected == model.ScreenGame {
 		return handleGameKey(m, msg)
@@ -54,6 +58,9 @@ func handleGameKey(m model.State, msg tea.KeyMsg) (model.State, tea.Cmd) {
 			return prevScreen(m), nil
 		case "right", "down", "j", "tab":
 			return nextScreen(m), nil
+		case "r":
+			m.Game = model.Game{WordLoading: true}
+			return m, restartGameCmd()
 		}
 		return m, nil
 	}
