@@ -12,6 +12,7 @@ type StoredSettings struct {
 	Theme       string `json:"theme,omitempty"`
 	Language    string `json:"language,omitempty"`
 	DisplayMode string `json:"display_mode,omitempty"`
+	BackendUrl  string `json:"backend_url,omitempty"`
 }
 
 type StoredConfig struct {

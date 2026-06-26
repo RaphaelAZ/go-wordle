@@ -5,11 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 	"time"
 )
 
-const defaultBaseURL = "http://localhost:8080"
+const defaultBaseURL = "https://gowordle.alwaysdata.net"
 
 type Client struct {
 	baseURL    string
@@ -17,8 +16,8 @@ type Client struct {
 	httpClient *http.Client
 }
 
-func New() *Client {
-	baseURL := os.Getenv("WORDLE_SERVER")
+func New(backendUrl string) *Client {
+	baseURL := backendUrl
 	if baseURL == "" {
 		baseURL = defaultBaseURL
 	}

@@ -21,7 +21,7 @@ type State struct {
 
 func NewModel() State {
 	cfg, _ := client.LoadConfig()
-	c := client.New()
+	c := client.New(cfg.Settings.BackendUrl)
 
 	s := model.State{Selected: model.ScreenHome}
 	s.Settings = storedToSettings(cfg.Settings)
@@ -48,6 +48,9 @@ func storedToSettings(s client.StoredSettings) model.Settings {
 	if s.DisplayMode != "" {
 		settings.DisplayMode = s.DisplayMode
 	}
+	if s.BackendUrl != "" {
+		settings.BackendUrl = s.BackendUrl
+	}
 	return settings
 }
 
@@ -58,6 +61,7 @@ func (m State) currentStoredConfig() *client.StoredConfig {
 			Theme:       m.State.Settings.Theme,
 			Language:    m.State.Settings.Language,
 			DisplayMode: m.State.Settings.DisplayMode,
+			BackendUrl:  m.State.Settings.BackendUrl,
 		},
 	}
 }

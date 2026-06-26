@@ -14,6 +14,7 @@ type Settings struct {
 	Theme       string // "sombre" | "clair"
 	Language    string // "fr" | "en"
 	DisplayMode string // "compact" | "normal"
+	BackendUrl  string // "https://gowordle.alwaysdata.net"
 }
 
 type SettingsChangedMsg struct{}
@@ -23,5 +24,6 @@ func DefaultSettings() Settings {
 		Theme:       "sombre",
 		Language:    "fr",
 		DisplayMode: "compact",
+		BackendUrl:  "https://gowordle.alwaysdata.net",
 	}
 }
