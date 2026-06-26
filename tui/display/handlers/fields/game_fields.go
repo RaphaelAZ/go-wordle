@@ -63,7 +63,10 @@ func DeleteGuessLetter(m model.State) model.State {
 }
 
 func SubmitGuess(m model.State) model.State {
-	if len([]rune(m.Game.CurrentGuess)) != 5 && model.GamePlaying == m.Game.Status {
+	if m.Game.WordToGuess == "" {
+		return m
+	}
+	if len([]rune(m.Game.CurrentGuess)) != 5 || m.Game.Status != model.GamePlaying {
 		return m
 	}
 	guess := m.Game.CurrentGuess

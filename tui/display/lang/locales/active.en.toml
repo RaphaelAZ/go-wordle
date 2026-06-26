@@ -67,6 +67,9 @@ other = "Language"
 [settings_field_display]
 other = "Display mode"
 
+[settings_field_logout]
+other = "Log out"
+
 [settings_footer_idle]
 other = "Press Enter to edit"
 
@@ -93,3 +96,6 @@ other = "Saving..."
 
 [game_save_error]
 other = "Save error: {{.Error}}"
+
+[game_word_error]
+other = "Failed to load word: {{.Error}}"

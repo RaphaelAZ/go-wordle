@@ -6,6 +6,7 @@ const (
 	SettingsFieldTheme SettingsField = iota
 	SettingsFieldLanguage
 	SettingsFieldDisplayMode
+	SettingsFieldLogout
 	SettingsFieldCount
 )
 
@@ -18,6 +19,7 @@ type Settings struct {
 }
 
 type SettingsChangedMsg struct{}
+type LogoutMsg struct{}
 
 func DefaultSettings() Settings {
 	return Settings{
