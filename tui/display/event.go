@@ -137,9 +137,25 @@ func (m State) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if msg.Err == nil {
 			nm.Game.WordID = msg.WordID
 			nm.Game.WordToGuess = msg.Word
+			nm.Game.WordError = ""
 			nm.Game.StartedAt = time.Now()
+		} else {
+			nm.Game.WordError = msg.Err.Error()
 		}
 		return State{State: nm, Client: m.Client}, nil
+	case model.RestartGameMsg:
+		return m, m.fetchWord()
+	case model.LogoutMsg:
+		nm := m.State
+		nm.Token = ""
+		nm.Connected = false
+		nm.Game = model.Game{}
+		nm.Selected = model.ScreenAuth
+		nm.Settings.Field = model.SettingsFieldTheme
+		m.Client.SetToken("")
+		updated := State{State: nm, Client: m.Client}
+		_ = client.SaveConfig(updated.currentStoredConfig())
+		return updated, nil
 	case model.SettingsChangedMsg:
 		lang.Init(m.State.Settings.Language)
 		SetTheme(m.State.Settings.Theme)

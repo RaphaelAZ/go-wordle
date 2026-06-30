@@ -67,6 +67,9 @@ other = "Language"
 [settings_field_display]
 other = "Display mode"
 
+[settings_field_logout]
+other = "Log out"
+
 [settings_footer_idle]
 other = "Press Enter to edit"
 
@@ -85,6 +88,9 @@ other = "Well done! You found the word!"
 [game_footer_lost]
 other = "Game over! The word was: {{.Word}}"
 
+[game_restart_button]
+other = "[ r ]  New game"
+
 [game_loading]
 other = "Loading word..."
 
@@ -93,3 +99,6 @@ other = "Saving..."
 
 [game_save_error]
 other = "Save error: {{.Error}}"
+
+[game_word_error]
+other = "Failed to load word: {{.Error}}"

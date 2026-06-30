@@ -67,6 +67,9 @@ other = "Langue"
 [settings_field_display]
 other = "Mode d'affichage"
 
+[settings_field_logout]
+other = "Déconnexion"
+
 [settings_footer_idle]
 other = "Appuyez sur Entrée pour éditer"
 
@@ -85,6 +88,9 @@ other = "Bravo ! Vous avez trouvé le mot !"
 [game_footer_lost]
 other = "Perdu ! Le mot était : {{.Word}}"
 
+[game_restart_button]
+other = "[ r ]  Nouvelle partie"
+
 [game_loading]
 other = "Chargement du mot en cours..."
 
@@ -93,3 +99,6 @@ other = "Sauvegarde en cours..."
 
 [game_save_error]
 other = "Erreur de sauvegarde : {{.Error}}"
+
+[game_word_error]
+other = "Impossible de charger le mot : {{.Error}}"

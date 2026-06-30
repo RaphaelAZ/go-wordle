@@ -10,6 +10,14 @@ func settingsChangedCmd() tea.Cmd {
 	return func() tea.Msg { return model.SettingsChangedMsg{} }
 }
 
+func logoutCmd() tea.Cmd {
+	return func() tea.Msg { return model.LogoutMsg{} }
+}
+
+func restartGameCmd() tea.Cmd {
+	return func() tea.Msg { return model.RestartGameMsg{} }
+}
+
 func HandleKey(m model.State, msg tea.KeyMsg) (model.State, tea.Cmd) {
 	if m.Selected == model.ScreenGame {
 		return handleGameKey(m, msg)
@@ -50,6 +58,9 @@ func handleGameKey(m model.State, msg tea.KeyMsg) (model.State, tea.Cmd) {
 			return prevScreen(m), nil
 		case "right", "down", "j", "tab":
 			return nextScreen(m), nil
+		case "r":
+			m.Game = model.Game{WordLoading: true}
+			return m, restartGameCmd()
 		}
 		return m, nil
 	}
@@ -118,6 +129,21 @@ func HandleEditKey(m model.State, msg tea.KeyMsg, submitAuth func(email, passwor
 }
 
 func handleSettingsEditKey(m model.State, msg tea.KeyMsg) (model.State, tea.Cmd) {
+	if m.Settings.Field == model.SettingsFieldLogout {
+		switch msg.String() {
+		case "esc":
+			return exitEdit(m), nil
+		case "tab", "down", "j":
+			m.Settings.Field = fields.NextSettingsField(m.Settings.Field)
+			return m, nil
+		case "up", "k":
+			m.Settings.Field = fields.PrevSettingsField(m.Settings.Field)
+			return m, nil
+		default:
+			return exitEdit(m), logoutCmd()
+		}
+	}
+
 	switch msg.String() {
 	case "esc", "enter":
 		return exitEdit(m), nil

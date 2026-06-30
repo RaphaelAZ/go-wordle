@@ -56,14 +56,18 @@ func SettingsScreen(m model.State) string {
 	theme := DefaultTheme()
 
 	type field struct {
-		label string
-		value string
-		id    model.SettingsField
+		label    string
+		value    string
+		id       model.SettingsField
+		isAction bool
 	}
 	fieldDefs := []field{
 		{label: lang.T("settings_field_theme"), value: lang.T("settings_theme_" + m.Settings.Theme), id: model.SettingsFieldTheme},
 		{label: lang.T("settings_field_language"), value: m.Settings.Language, id: model.SettingsFieldLanguage},
 		{label: lang.T("settings_field_display"), value: m.Settings.DisplayMode, id: model.SettingsFieldDisplayMode},
+	}
+	if m.Connected {
+		fieldDefs = append(fieldDefs, field{label: lang.T("settings_field_logout"), id: model.SettingsFieldLogout, isAction: true})
 	}
 
 	var body []string
@@ -71,13 +75,25 @@ func SettingsScreen(m model.State) string {
 		active := m.Editing && m.Settings.Field == f.id
 		style := theme.Text
 		prefix := "  "
-		hint := ""
 		if active {
 			style = theme.Accent
 			prefix = "> "
-			hint = "  ← →"
 		}
-		body = append(body, style.Render(prefix+f.label+" : "+f.value+hint))
+		var line string
+		if f.isAction {
+			hint := ""
+			if active {
+				hint = "  ↵"
+			}
+			line = style.Render(prefix + f.label + hint)
+		} else {
+			hint := ""
+			if active {
+				hint = "  ← →"
+			}
+			line = style.Render(prefix + f.label + " : " + f.value + hint)
+		}
+		body = append(body, line)
 	}
 
 	footer := lang.T("settings_footer_idle")
@@ -113,6 +129,23 @@ func GameLoadingScreen(m model.State) string {
 func GameScreen(m model.State) string {
 	if m.Game.WordLoading {
 		return GameLoadingScreen(m)
+	}
+
+	if m.Game.WordError != "" {
+		theme := DefaultTheme()
+		msg := theme.Error.Render(lang.T("game_word_error", map[string]any{"Error": m.Game.WordError}))
+		if m.Settings.DisplayMode == "compact" {
+			return RenderApp(lang.T("game_title"), "", []string{msg}, "")
+		}
+		width := m.Width
+		if width <= 0 {
+			width = 120
+		}
+		height := m.Height
+		if height <= 0 {
+			height = 30
+		}
+		return lipgloss.Place(width, height, lipgloss.Center, lipgloss.Center, msg)
 	}
 
 	theme := DefaultTheme()
@@ -172,6 +205,7 @@ func GameScreen(m model.State) string {
 		} else if m.Game.SaveError != "" {
 			lines = append(lines, theme.Error.Width(width).Align(lipgloss.Center).Render(lang.T("game_save_error", map[string]any{"Error": m.Game.SaveError})))
 		}
+		lines = append(lines, theme.Button.Width(width).Align(lipgloss.Center).Render(lang.T("game_restart_button")))
 	}
 
 	return lipgloss.JoinVertical(lipgloss.Left, lines...)
@@ -189,6 +223,7 @@ func compactGameScreen(m model.State, theme Theme, gridLines []string, footer st
 		} else if m.Game.SaveError != "" {
 			body = append(body, theme.Error.Render(lang.T("game_save_error", map[string]any{"Error": m.Game.SaveError})))
 		}
+		body = append(body, theme.Button.Render(lang.T("game_restart_button")))
 	}
 	return RenderApp(lang.T("game_title"), "", body, theme.Muted.Render(footer))
 }
