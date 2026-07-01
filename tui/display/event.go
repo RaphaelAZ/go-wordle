@@ -253,7 +253,7 @@ func (m State) topNavView(theme Theme) string {
 func (m State) contentView() string {
 	switch m.State.Selected {
 	case model.ScreenHome:
-		return HomeScreen()
+		return HomeScreen(m.State)
 	case model.ScreenAuth:
 		return AuthScreen(m.State)
 	case model.ScreenGame:
@@ -261,7 +261,7 @@ func (m State) contentView() string {
 	case model.ScreenSettings:
 		return SettingsScreen(m.State)
 	default:
-		return HomeScreen()
+		return HomeScreen(m.State)
 	}
 }
 

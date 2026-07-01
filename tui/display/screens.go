@@ -9,11 +9,15 @@ import (
 	"gowordle.com/display/model"
 )
 
-func HomeScreen() string {
+func HomeScreen(m model.State) string {
 	theme := DefaultTheme()
+	mainScreen := theme.Section.Render("[2] " + lang.T("screen_auth"))
+	if m.Connected {
+		mainScreen = theme.Section.Render("[2] " + lang.T("screen_game"))
+	}
 	body := []string{
 		theme.Section.Render("[1] " + lang.T("screen_home")),
-		theme.Section.Render("[2] " + lang.T("screen_auth")),
+		mainScreen,
 		theme.Section.Render("[3] " + lang.T("screen_settings")),
 	}
 
@@ -256,7 +260,7 @@ func Dashboard() string {
 	sections := []string{
 		theme.Button.Render("CUI CUI JE SUIS UN POULET"),
 		"",
-		HomeScreen(),
+		HomeScreen(model.State{}),
 		"",
 		AuthScreen(model.State{}),
 		"",
