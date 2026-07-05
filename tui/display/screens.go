@@ -31,26 +31,39 @@ func HomeScreen(m model.State) string {
 
 func AuthScreen(m model.State) string {
 	theme := DefaultTheme()
-	body := []string{
-		authFieldLine(theme, lang.T("auth_field_email"), m.Auth.Login, m.Editing && m.Auth.Field == model.AuthFieldLogin, false),
-		authFieldLine(theme, lang.T("auth_field_password"), m.Auth.Password, m.Editing && m.Auth.Field == model.AuthFieldPassword, true),
+	register := m.Auth.Mode == model.AuthModeRegister
+
+	var body []string
+	if register {
+		body = append(body, authFieldLine(theme, lang.T("auth_field_username"), m.Auth.Username, m.Editing && m.Auth.Field == model.AuthFieldUsername, false))
 	}
+	body = append(body,
+		authFieldLine(theme, lang.T("auth_field_email"), m.Auth.Email, m.Editing && m.Auth.Field == model.AuthFieldEmail, false),
+		authFieldLine(theme, lang.T("auth_field_password"), m.Auth.Password, m.Editing && m.Auth.Field == model.AuthFieldPassword, true),
+	)
 
 	if m.Auth.Error != "" {
 		body = append(body, theme.Error.Render(lang.T("auth_error", map[string]any{"Error": m.Auth.Error})))
 	}
 
-	footer := lang.T("auth_footer_idle")
+	footer := lang.T("auth_footer_idle") + "  ·  " + lang.T("auth_toggle_register")
 	switch {
 	case m.Auth.Loading:
 		footer = lang.T("auth_footer_loading")
 	case m.Editing:
 		footer = lang.T("auth_footer_editing")
+	case register:
+		footer = lang.T("auth_footer_idle") + "  ·  " + lang.T("auth_toggle_login")
+	}
+
+	subtitle := lang.T("auth_subtitle")
+	if register {
+		subtitle = lang.T("auth_subtitle_register")
 	}
 
 	return RenderApp(
 		lang.T("auth_title"),
-		lang.T("auth_subtitle"),
+		subtitle,
 		body,
 		theme.Muted.Render(footer),
 	)
