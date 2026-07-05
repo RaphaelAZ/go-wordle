@@ -97,9 +97,17 @@ func (m State) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		if m.State.Editing {
-			nm, cmd := handlers.HandleEditKey(m.State, msg, func(email, password string) tea.Cmd {
+			nm, cmd := handlers.HandleEditKey(m.State, msg, func(auth model.Auth) tea.Cmd {
 				return func() tea.Msg {
-					token, err := m.Client.Login(email, password)
+					var (
+						token string
+						err   error
+					)
+					if auth.Mode == model.AuthModeRegister {
+						token, err = m.Client.Register(auth.Username, auth.Email, auth.Password)
+					} else {
+						token, err = m.Client.Login(auth.Email, auth.Password)
+					}
 					return model.AuthResultMsg{Token: token, Err: err}
 				}
 			})
@@ -125,7 +133,8 @@ func (m State) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		nm.Selected = model.ScreenGame
 		nm.Game.WordLoading = true
 		nm.Auth.Error = ""
-		nm.Auth.Login = ""
+		nm.Auth.Username = ""
+		nm.Auth.Email = ""
 		nm.Auth.Password = ""
 		m.Client.SetToken(msg.Token)
 		updated := State{State: nm, Client: m.Client}

@@ -36,6 +36,12 @@ type loginRequest struct {
 	Password string `json:"password"`
 }
 
+type registerRequest struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
 type authResponse struct {
 	Token string `json:"token"`
 	Error string `json:"error"`
@@ -121,6 +127,30 @@ func (c *Client) Login(email, password string) (string, error) {
 			return "", fmt.Errorf("%s", result.Error)
 		}
 		return "", fmt.Errorf("login failed (%d)", resp.StatusCode)
+	}
+	return result.Token, nil
+}
+
+func (c *Client) Register(username, email, password string) (string, error) {
+	body, err := json.Marshal(registerRequest{Username: username, Email: email, Password: password})
+	if err != nil {
+		return "", err
+	}
+	resp, err := c.httpClient.Post(c.baseURL+"/api/auth/register", "application/json", bytes.NewReader(body))
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	var result authResponse
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return "", err
+	}
+	if resp.StatusCode != http.StatusCreated {
+		if result.Error != "" {
+			return "", fmt.Errorf("%s", result.Error)
+		}
+		return "", fmt.Errorf("registration failed (%d)", resp.StatusCode)
 	}
 	return result.Token, nil
 }
