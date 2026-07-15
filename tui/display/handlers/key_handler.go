@@ -28,15 +28,22 @@ func HandleKey(m model.State, msg tea.KeyMsg) (model.State, tea.Cmd) {
 		return m, tea.Quit
 	case "left", "up", "k":
 		return prevScreen(m), nil
-	case "right", "down", "j", "tab":
+	case "right", "down", "j":
 		return nextScreen(m), nil
 	case "1", "2", "3":
 		return selectByNumber(m, msg.String()), nil
+	case "tab":
+		if m.Selected == model.ScreenAuth {
+			m.Auth = fields.ToggleAuthMode(m.Auth)
+			return m, nil
+		}
+		return nextScreen(m), nil
 	case "enter":
 		m.Editing = true
 		m.Focus = true
 		if m.Selected == model.ScreenAuth {
-			m.Auth.Field = model.AuthFieldLogin
+			m.Auth.Field = m.Auth.Fields()[0]
+			m.Auth.Error = ""
 		}
 		if m.Selected == model.ScreenSettings {
 			m.Settings.Field = model.SettingsFieldTheme
@@ -88,7 +95,7 @@ func handleGameKey(m model.State, msg tea.KeyMsg) (model.State, tea.Cmd) {
 	return m, nil
 }
 
-func HandleEditKey(m model.State, msg tea.KeyMsg, submitAuth func(email, password string) tea.Cmd) (model.State, tea.Cmd) {
+func HandleEditKey(m model.State, msg tea.KeyMsg, submitAuth func(auth model.Auth) tea.Cmd) (model.State, tea.Cmd) {
 	if m.Selected == model.ScreenSettings {
 		return handleSettingsEditKey(m, msg)
 	}
@@ -97,21 +104,21 @@ func HandleEditKey(m model.State, msg tea.KeyMsg, submitAuth func(email, passwor
 	case "esc":
 		return exitEdit(m), nil
 	case "enter":
-		if m.Selected == model.ScreenAuth && m.Auth.Field == model.AuthFieldLogin {
-			m.Auth.Field = model.AuthFieldPassword
-			return m, nil
-		}
-		if m.Selected == model.ScreenAuth && m.Auth.Field == model.AuthFieldPassword {
+		if m.Selected == model.ScreenAuth {
+			if !fields.IsLastAuthField(m.Auth) {
+				m.Auth.Field = fields.NextAuthField(m.Auth)
+				return m, nil
+			}
 			m.Auth.Loading = true
 			m.Auth.Error = ""
 			m.Editing = false
 			m.Focus = false
-			return m, submitAuth(m.Auth.Login, m.Auth.Password)
+			return m, submitAuth(m.Auth)
 		}
 		return exitEdit(m), nil
 	case "tab", "down":
 		if m.Selected == model.ScreenAuth {
-			m.Auth.Field = fields.NextAuthField(m.Auth.Field)
+			m.Auth.Field = fields.NextAuthField(m.Auth)
 			return m, nil
 		}
 		return exitEdit(m), nil

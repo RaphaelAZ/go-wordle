@@ -28,6 +28,12 @@ other = "Authentification"
 [auth_subtitle]
 other = "Connexion au compte utilisateur"
 
+[auth_subtitle_register]
+other = "Création d'un nouveau compte"
+
+[auth_field_username]
+other = "Nom d'utilisateur"
+
 [auth_field_email]
 other = "Email"
 
@@ -45,6 +51,12 @@ other = "Connexion en cours..."
 
 [auth_footer_editing]
 other = "Entrée: champ suivant, Échap: quitter l'édition"
+
+[auth_toggle_register]
+other = "Tab: créer un compte"
+
+[auth_toggle_login]
+other = "Tab: déjà un compte ? Se connecter"
 
 [settings_title]
 other = "Paramètres"

@@ -28,6 +28,12 @@ other = "Authentication"
 [auth_subtitle]
 other = "Sign in to your account"
 
+[auth_subtitle_register]
+other = "Create a new account"
+
+[auth_field_username]
+other = "Username"
+
 [auth_field_email]
 other = "Email"
 
@@ -45,6 +51,12 @@ other = "Signing in..."
 
 [auth_footer_editing]
 other = "Enter: next field, Esc: cancel"
+
+[auth_toggle_register]
+other = "Tab: create an account"
+
+[auth_toggle_login]
+other = "Tab: already have an account? Sign in"
 
 [settings_title]
 other = "Settings"
