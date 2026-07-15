@@ -1,4 +1,4 @@
-version: 2
+version: 1
 
 project_name: go-wordle
 
@@ -21,11 +21,13 @@ builds:
 
 archives:
   - id: tui
-    ids:
+    builds:
       - tui
-    formats:
-      - tar.gz
-      - zip
+    format: tar.gz
+  - id: tui-zip
+    builds:
+      - tui
+    format: zip
 
 checksum:
   name_template: checksums.txt
@@ -38,6 +40,8 @@ scoop:
   bucket:
     owner: RaphaelAZ
     name: scoop-bucket-gowordle
+  ids:
+    - tui
   folder: bucket
   commit_author:
     name: RaphaelAz
