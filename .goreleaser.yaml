@@ -71,21 +71,3 @@ scoop:
   description: "Gowordle - CLI Wordle game"
   homepage: "https://github.com/RaphaelAZ/go-wordle"
   license: MIT
-
-brews:
-  - folder: Formula
-    goarm: "7"
-    homepage: "https://github.com/RaphaelAZ/go-wordle"
-    description: "Gowordle - CLI Wordle game"
-    license: MIT
-    repository:
-      owner: RaphaelAZ
-      name: homebrew-go-wordle
-      branch: main
-    commit_author:
-      name: RaphaelAz
-      email: azevedo.raphael2017@gmail.com
-    commit_msg_template: "Homebrew formula update for {{ .ProjectName }} version {{ .Version }}"
-    skip_upload: false
-    ids:
-      - tui
