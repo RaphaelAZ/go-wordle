@@ -36,17 +36,17 @@ changelog:
   use: git
   sort: asc
 
-scoop:
-  bucket:
-    owner: RaphaelAZ
-    name: scoop-bucket-gowordle
-  ids:
-    - tui
-  folder: bucket
-  commit_author:
-    name: RaphaelAz
-    email: azevedo.raphael2017@gmail.com
-  commit_msg_template: "Scoop update for {{ .ProjectName }} version {{ .Version }}"
-  description: "Gowordle - CLI Wordle game"
-  homepage: "https://github.com/RaphaelAZ/go-wordle"
-  license: MIT
+scoops:
+  - repository:
+      owner: RaphaelAZ
+      name: scoop-bucket-gowordle
+    ids:
+      - tui
+    directory: bucket
+    commit_author:
+      name: RaphaelAz
+      email: azevedo.raphael2017@gmail.com
+    commit_msg_template: "Scoop update for {{ .ProjectName }} version {{ .Version }}"
+    description: "Gowordle - CLI Wordle game"
+    homepage: "https://github.com/RaphaelAZ/go-wordle"
+    license: MIT
