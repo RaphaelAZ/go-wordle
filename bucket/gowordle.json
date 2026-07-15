@@ -5,7 +5,7 @@
     "license": "MIT",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/RaphaelAZ/go-wordle/releases/download/v#Version#/go-wordle_windows_amd64.zip",
+            "url": "https://github.com/RaphaelAZ/go-wordle/releases/download/v#Version#/go-wordle_#Version#_windows_amd64.zip",
             "hash": "sha256:..."
         }
     },
@@ -13,12 +13,12 @@
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/RaphaelAZ/go-wordle/releases/download/v#Version#/go-wordle_windows_amd64.zip"
+                "url": "https://github.com/RaphaelAZ/go-wordle/releases/download/v#Version#/go-wordle_#Version#_windows_amd64.zip"
             }
         },
         "hash": {
             "url": "https://github.com/RaphaelAZ/go-wordle/releases/download/v#Version#/checksums.txt",
-            "find": "go-wordle_windows_amd64.zip\\s+(\\w+)"
+            "find": "go-wordle_#Version#_windows_amd64.zip\\s+(\\w+)"
         }
     }
 }
