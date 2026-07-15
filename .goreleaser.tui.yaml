@@ -36,11 +36,13 @@ changelog:
   use: git
   sort: asc
 
-scoopers:
-  - bucket:
+scoops:
+  - repository:
       owner: RaphaelAZ
       name: go-wordle
-    folder: bucket
+    ids:
+      - tui
+    directory: bucket
     commit_author:
       name: RaphaelAz
       email: azevedo.raphael2017@gmail.com
