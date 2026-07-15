@@ -33,6 +33,7 @@ jobs:
         run: goreleaser release --clean --config .goreleaser.tui.yaml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SCOOP_TOKEN: ${{ secrets.SCOOP_TOKEN }}
       
       - name: Build Linux binary
         run: |
